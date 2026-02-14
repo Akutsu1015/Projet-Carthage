@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lyoko-blue: #00d4ff;
+  --color-lyoko-green: #00ff88;
+  --color-lyoko-purple: #a855f7;
+  --color-xana-red: #ff2244;
+  --color-carthage-gold: #fbbf24;
+  --color-dark-bg: #050a18;
+  --color-dark-surface: #0a1628;
+  --color-dark-card: #0f1f3a;
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-orbitron);
+  --font-mono: var(--font-share-tech-mono);
+}
+
+/* ═══ LIGHT MODE — override Tailwind tokens ═══ */
+html.light {
+  --color-dark-bg: #f0f4f8;
+  --color-dark-surface: #ffffff;
+  --color-dark-card: #f1f5f9;
+  --color-white: #1e293b;
+  --color-lyoko-blue: #0091b2;
+  --color-lyoko-green: #059669;
+  --color-xana-red: #dc2626;
+  --color-lyoko-purple: #7c3aed;
+  --color-carthage-gold: #d97706;
+}
+
+/* ═══ BASE ═══ */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-dark-bg);
+  color: #e2e8f0;
+  overflow-x: hidden;
+}
+
+html.light body {
+  color: #1e293b;
+}
+
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #fff;
+}
+
+html.light ::selection {
+  background: rgba(0, 145, 178, 0.25);
+  color: #000;
+}
+
+/* ═══ SCANLINES OVERLAY ═══ */
+.scanlines::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 212, 255, 0.015) 2px,
+    rgba(0, 212, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+html.light .scanlines::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 145, 178, 0.012) 2px,
+    rgba(0, 145, 178, 0.012) 4px
+  );
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-dark-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.4);
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 145, 178, 0.25);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 145, 178, 0.45);
+}
+
+/* ═══ LIGHT MODE — gradient & shadow overrides ═══ */
+html.light :not(.force-dark)[style*="drop-shadow"] {
+  filter: none !important;
+}
+
+/* Fix bg-gradient-to-b from-dark-bg in light mode */
+html.light .from-dark-bg { --tw-gradient-from: #f0f4f8; }
+html.light .to-dark-bg { --tw-gradient-to: #f0f4f8; }
+html.light .from-dark-surface { --tw-gradient-from: #ffffff; }
+html.light .to-dark-surface { --tw-gradient-to: #ffffff; }
+
+/* Fix inline bg-white/[0.0x] on light mode — make slightly darker instead */
+html.light [class*="bg-white/[0.0"] {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+html.light [class*="bg-white/5"] {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Fix hardcoded dark hex backgrounds */
+html.light [class*="bg-[#050a18]"] { background-color: #f0f4f8 !important; }
+html.light [class*="bg-[#0a1628]"] { background-color: #ffffff !important; }
+html.light [class*="bg-[#0f1f3a]"] { background-color: #f1f5f9 !important; }
+html.light [class*="bg-[#0d0d1a]"] { background-color: #f8fafc !important; }
+
+/* Keep REAL white text on colored/gradient backgrounds */
+html.light [class*="bg-gradient"] { --color-white: #ffffff; }
+html.light [class*="bg-lyoko-blue"] { --color-white: #ffffff; }
+html.light [class*="bg-xana-red"] { --color-white: #ffffff; }
+html.light [class*="bg-lyoko-purple"] { --color-white: #ffffff; }
+html.light [class*="bg-lyoko-green"] { --color-white: #ffffff; }
+
+/* Keep white text inside inline-styled colored backgrounds (avatars, badges) */
+html.light [style*="background"] > .text-white,
+html.light [style*="background"] .text-white {
+  color: #ffffff !important;
+}
+
+/* Login/Register branding panel gradients (skip .force-dark) */
+html.light :not(.force-dark)[class*="from-[#04"] { --tw-gradient-from: #e0e8f0; --tw-gradient-to: #d4dce8; }
+html.light :not(.force-dark)[class*="via-[#08"] { --tw-gradient-via: #e8ecf2; }
+html.light :not(.force-dark)[class*="to-[#0a0f"] { --tw-gradient-to: #dce4f0; }
+
+/* Hero section — keep dramatic gradient in dark, soften in light */
+html.light :not(.force-dark)[class*="from-[#020"] { --tw-gradient-from: #e0e8f0; }
+html.light :not(.force-dark)[class*="via-[#05"] { --tw-gradient-via: #eef2f7; }
+
+/* Fix code editor backgrounds — keep dark for code blocks */
+html.light pre[class*="bg-"],
+html.light code[class*="bg-"] {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+/* Exercise content — code blocks inside dangerouslySetInnerHTML */
+html.light .intro-content pre,
+html.light [class*="dangerously"] pre,
+html.light div[class*="text-white"] pre {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-radius: 8px;
+  padding: 16px;
+}
+html.light .intro-content pre code,
+html.light div[class*="text-white"] pre code {
+  color: #e2e8f0 !important;
+}
+
+/* Exercise preview area — keep white bg with dark text */
+html.light .bg-white {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* Light mode — soften neon glow shadows */
+html.light [class*="shadow-[0_0"] {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Light mode — border colors */
+html.light [class*="border-lyoko-blue/"] {
+  border-color: rgba(0, 145, 178, 0.15);
+}
+
+/* Light mode — navbar glass effect */
+html.light nav {
+  background: rgba(240, 244, 248, 0.92) !important;
+  border-bottom-color: rgba(0, 145, 178, 0.1) !important;
+}
+
+/* ═══ FORCE-DARK — keeps panels dark regardless of theme ═══ */
+.force-dark,
+.force-dark *,
+html.light .force-dark,
+html.light .force-dark * {
+  --color-white: #ffffff !important;
+  --color-lyoko-blue: #00d4ff !important;
+  --color-lyoko-green: #00ff88 !important;
+  --color-lyoko-purple: #a855f7 !important;
+  --color-xana-red: #ff2244 !important;
+  --color-carthage-gold: #fbbf24 !important;
+  --color-dark-bg: #050a18 !important;
+  --color-dark-surface: #0a1628 !important;
+  --color-dark-card: #0f1f3a !important;
+}
+.force-dark {
+  color: #e2e8f0 !important;
+}
+/* Block light-mode bg/shadow overrides inside force-dark */
+html.light .force-dark [class*="bg-white"] {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+html.light .force-dark [class*="shadow-["] {
+  box-shadow: none !important;
+}
+
+/* Light mode — form inputs styling */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #1e293b !important;
+}
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: rgba(0, 0, 0, 0.3) !important;
+}
+html.light input:focus,
+html.light textarea:focus,
+html.light select:focus {
+  border-color: rgba(0, 145, 178, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(0, 145, 178, 0.1) !important;
+}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes xana-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 34, 68, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(255, 34, 68, 0.6), 0 0 100px rgba(255, 34, 68, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glitch-flicker {
+  0%, 92%, 94%, 96%, 100% { opacity: 1; }
+  93% { opacity: 0.6; transform: translateX(-2px); }
+  95% { opacity: 0.8; transform: translateX(2px); }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-xana-pulse { animation: xana-pulse 2s ease-in-out infinite; }
+.animate-glitch { animation: glitch-flicker 3s infinite; }
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
