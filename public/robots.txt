@@ -4,4 +4,8 @@ Disallow: /api/
 Disallow: /dashboard
 Disallow: /verify-email
 
+# Sitemap
 Sitemap: https://gamematcher.fr/sitemap.xml
+
+# IndexNow key
+# https://gamematcher.fr/bd8c93df7f31b67adf73b9b05a749c2a.txt
