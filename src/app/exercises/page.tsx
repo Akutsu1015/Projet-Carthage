@@ -4,11 +4,27 @@ import { BookOpen } from "lucide-react";
 import { AvailableModuleCards, UpcomingModuleCards } from "./module-cards";
 
 export const metadata: Metadata = {
-  title: "Modules d'exercices",
-  description: "Tous les modules d'exercices de PROJET CARTHAGE : Front-End, JavaScript, Python, Dart & Flutter et plus. 792+ exercices interactifs gamifiés.",
+  title: "1100+ Exercices de Programmation Gratuits — HTML, JS, Python, React, C#, C++",
+  description:
+    "Pratiquez avec 1100+ exercices de code interactifs et gratuits. 8 modules : HTML/CSS, JavaScript, Python, React, Node.js, C#, C++, Dart & Flutter. Progressez du débutant au confirmé avec XP, badges et correction automatique.",
+  keywords: [
+    "exercices de programmation",
+    "exercices de code gratuit",
+    "exercices de code en ligne",
+    "exercices JavaScript",
+    "exercices Python",
+    "exercices HTML CSS",
+    "exercices React",
+    "exercices Node.js",
+    "exercices C#",
+    "exercices C++",
+    "exercices Dart Flutter",
+    "pratiquer le code en ligne",
+    "s'entraîner à coder",
+  ],
   openGraph: {
-    title: "Modules d'exercices – PROJET CARTHAGE",
-    description: "792+ exercices interactifs pour apprendre à coder dans l'univers de Code Lyoko.",
+    title: "1100+ Exercices de Programmation Gratuits — PROJET CARTHAGE",
+    description: "Pratiquez avec 1100+ exercices de code interactifs et gratuits. 8 modules, du débutant au confirmé.",
   },
 };
 

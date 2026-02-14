@@ -106,26 +106,33 @@ function JsonLd() {
   );
 }
 
-function CourseJsonLd() {
-  const courses = [
-    { name: "Formation Front-End (HTML, CSS, Bootstrap, SCSS)", desc: "250 exercices interactifs" },
-    { name: "Formation JavaScript", desc: "Maîtrisez le langage du web moderne" },
-    { name: "Formation Python", desc: "IA, data science et automatisation" },
-    { name: "Formation C# .NET", desc: "Applications desktop et serveur" },
-    { name: "Formation Dart & Flutter", desc: "Applications mobiles multiplateformes" },
-  ];
+function OrganizationJsonLd() {
   const data = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: courses.map((c, i) => ({
-      "@type": "Course",
-      position: i + 1,
-      name: c.name,
-      description: c.desc,
-      provider: { "@type": "Organization", name: SITE.name },
-      isAccessibleForFree: true,
-      inLanguage: "fr",
-    })),
+    "@type": "EducationalOrganization",
+    name: "Projet Carthage",
+    url: SITE.url,
+    logo: `${SITE.url}/images/carthage_logo.png`,
+    description: SITE.description,
+    sameAs: [
+      "https://github.com/Akutsu1015/Projet-Carthage",
+    ],
+    areaServed: { "@type": "Country", name: "France" },
+    knowsLanguage: "fr",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Formations gratuites en programmation",
+      itemListElement: [
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation HTML & CSS" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation JavaScript" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation Python" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation React" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation Node.js" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation C# .NET" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation C/C++" }, price: "0", priceCurrency: "EUR" },
+        { "@type": "Offer", itemOffered: { "@type": "Course", name: "Formation Dart & Flutter" }, price: "0", priceCurrency: "EUR" },
+      ],
+    },
   };
   return (
     <script
@@ -160,7 +167,7 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
         <JsonLd />
-        <CourseJsonLd />
+        <OrganizationJsonLd />
       </body>
     </html>
   );
