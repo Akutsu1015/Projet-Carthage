@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /dashboard
-Sitemap: https://projet-carthage.fr/sitemap.xml
+Disallow: /verify-email
+
+Sitemap: https://gamematcher.fr/sitemap.xml

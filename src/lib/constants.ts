@@ -15,7 +15,7 @@ export const SITE = {
   title: "PROJET CARTHAGE – Apprenez à coder dans l'univers de Code Lyoko",
   description:
     "Plateforme 100% GRATUITE de formation au code inspirée de Code Lyoko. Maîtrisez HTML, CSS, JavaScript, Python, C#, Dart & Flutter à travers 1100+ exercices gamifiés avec XP, badges et classements. Sans abonnement, sans pub.",
-  url: "https://projet-carthage.fr",
+  url: "https://gamematcher.fr",
   locale: "fr_FR",
   creator: "Projet Carthage",
   keywords: [
