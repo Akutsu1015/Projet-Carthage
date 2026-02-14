@@ -132,7 +132,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="text-xs text-white/40 transition-colors hover:text-lyoko-blue"
             >
-              Twistein — Quiz &amp; Culture G
+              QuizTimes — Quiz en ligne multijoueur
             </a>
             <p className="flex items-center gap-1 text-xs text-white/30">
               Fait avec <Heart size={12} className="text-xana-red" /> pour sauver le monde
