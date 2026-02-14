@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ExternalLink, Github } from "lucide-react";
 
 const PAYPAL_DONATE_URL = "https://www.paypal.com/donate?business=baptpro%40outlook.com&currency_code=EUR&item_name=Don+pour+Projet+Carthage";
 
@@ -37,6 +37,8 @@ const FOOTER_SECTIONS = [
     ],
   },
 ];
+
+const GITHUB_URL = "https://github.com/Akutsu1015/Projet-Carthage";
 
 export function Footer() {
   return (
@@ -89,6 +91,25 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Open Source CTA */}
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-6 text-center sm:flex-row sm:text-left">
+          <Github size={28} className="flex-shrink-0 text-white/60" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-white/80">Projet Open Source</p>
+            <p className="text-xs text-white/40">Contribuez au code, proposez des exercices, corrigez des bugs — toute aide est la bienvenue !</p>
+          </div>
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition-all hover:border-lyoko-blue/30 hover:bg-lyoko-blue/10 hover:text-white"
+          >
+            <Github size={14} />
+            Contribuer sur GitHub
+            <ExternalLink size={12} className="opacity-50" />
+          </a>
+        </div>
+
         <hr className="my-8 border-white/5" />
 
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
@@ -96,6 +117,15 @@ export function Footer() {
             &copy; {new Date().getFullYear()} PROJET CARTHAGE. Inspiré par Code Lyoko.
           </p>
           <div className="flex items-center gap-4">
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs text-white/40 transition-colors hover:text-white/70"
+            >
+              <Github size={14} />
+              GitHub
+            </a>
             <a
               href="https://quiztimes.fr"
               target="_blank"
