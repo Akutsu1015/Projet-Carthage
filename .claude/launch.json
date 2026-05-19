@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "next-dev"],
+      "port": 3000
+    },
+    {
+      "name": "Battle server (Socket.IO)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["battle-server.js"],
+      "port": 3002
+    },
+    {
+      "name": "Both (Next.js + Battle server)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    }
+  ]
+}
