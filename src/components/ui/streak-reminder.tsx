@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { Flame, AlertTriangle, PartyPopper } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 
 type NotifType = "danger" | "celebrate" | null;
 
 export function StreakReminder() {
     const { user } = useAuth();
+    const { lang } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [notifType, setNotifType] = useState<NotifType>(null);
 
@@ -47,15 +49,19 @@ export function StreakReminder() {
             icon: AlertTriangle,
             bg: "border-xana-red/30 bg-xana-red/[0.08]",
             iconColor: "text-xana-red",
-            title: "⚠️ Streak en danger !",
-            message: `Votre streak de ${user.streak} jour${user.streak > 1 ? "s" : ""} expire bientôt. Complétez un exercice pour le maintenir !`,
+            title: lang === "fr" ? "⚠️ Streak en danger !" : "⚠️ Streak in danger!",
+            message: lang === "fr"
+                ? `Votre streak de ${user.streak} jour${user.streak > 1 ? "s" : ""} expire bientôt. Complétez un exercice pour le maintenir !`
+                : `Your ${user.streak}-day streak is about to expire. Complete an exercise to keep it!`,
         },
         celebrate: {
             icon: PartyPopper,
             bg: "border-carthage-gold/30 bg-carthage-gold/[0.08]",
             iconColor: "text-carthage-gold",
-            title: `🔥 ${user.streak} jours de streak !`,
-            message: "Impressionnant ! Continuez sur cette lancée, guerrier de Lyoko !",
+            title: lang === "fr" ? `🔥 ${user.streak} jours de streak !` : `🔥 ${user.streak}-day streak!`,
+            message: lang === "fr"
+                ? "Impressionnant ! Continuez sur cette lancée, guerrier de Lyoko !"
+                : "Impressive! Keep it up, Lyoko warrior!",
         },
     };
 

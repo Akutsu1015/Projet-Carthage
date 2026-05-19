@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { BLOCS, MODULES } from "@/lib/constants";
+import { useTranslation } from "@/lib/translation-context";
 import {
   Crosshair, Eye, Globe, Smartphone, Monitor,
   Palette, Braces, Terminal, Cpu, Atom, Server, ArrowRight, Lock,
@@ -22,6 +23,7 @@ const SECTOR_ICON: Record<string, any> = {
 
 function XanaThreatBar() {
   const [power, setPower] = useState(100);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let blocs = 0;
@@ -42,7 +44,7 @@ function XanaThreatBar() {
     <div className="mb-12 rounded-2xl border border-xana-red/15 bg-gradient-to-br from-xana-red/5 to-lyoko-purple/5 p-6">
       <div className="mb-2 flex items-center justify-between">
         <span className="flex items-center gap-1.5 font-display text-xs font-semibold text-xana-red">
-          <Eye size={14} /> Puissance de XANA
+          <Eye size={14} /> {t("home.xana_threat")}
         </span>
         <span className="font-mono text-xs text-white/50">{power}%</span>
       </div>
@@ -53,23 +55,25 @@ function XanaThreatBar() {
         />
       </div>
       <p className="mt-2 text-center text-xs text-white/40">
-        Chaque bloc complété réduit la puissance de XANA de 33%. Complétez les 3 pour l&apos;éliminer.
+        {t("home.xana_threat_desc")}
       </p>
     </div>
   );
 }
 
 export function MissionsSection() {
+  const { t } = useTranslation();
+
   return (
     <section id="missions" className="relative py-20">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <ScrollReveal>
           <h2 className="mb-2 text-center font-display text-[clamp(1.5rem,4vw,2.5rem)] font-extrabold">
             <Crosshair className="mb-1 mr-2 inline-block text-xana-red" size={28} />
-            Vos <span className="text-xana-red">3 Missions</span>
+            {t("home.missions_heading")} <span className="text-xana-red">{t("home.missions_heading_red")}</span>
           </h2>
           <p className="mb-8 text-center text-sm text-white/50">
-            Complétez les 3 blocs pour exterminer XANA définitivement
+            {t("home.missions_subtitle")}
           </p>
         </ScrollReveal>
 
@@ -110,8 +114,8 @@ export function MissionsSection() {
                     <BlocIcon size={28} />
                   </div>
 
-                  <h3 className="mb-2 font-display text-lg text-white">{bloc.name}</h3>
-                  <p className="mb-4 text-sm leading-relaxed text-white/60">{bloc.description}</p>
+                  <h3 className="mb-2 font-display text-lg text-white">{t("blocs_data." + bloc.id + ".name")}</h3>
+                  <p className="mb-4 text-sm leading-relaxed text-white/60">{t("blocs_data." + bloc.id + ".description")}</p>
 
                   <span
                     className="mb-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold tracking-wide"
@@ -122,7 +126,7 @@ export function MissionsSection() {
                     }}
                   >
                     <SectorIcon size={12} />
-                    {bloc.sector}
+                    {t("blocs_data." + bloc.id + ".sector")}
                   </span>
 
                   {/* Module list */}
@@ -140,13 +144,13 @@ export function MissionsSection() {
                           >
                             <ModIcon size={18} style={{ color: mod.color }} />
                             <span className="flex-1 text-sm font-medium text-white/80">
-                              {mod.name}
+                              {t("modules_data." + mod.id + ".name")}
                               {mod.levels > 0 && (
-                                <span className="ml-1 text-xs text-white/40">({mod.levels} niveaux)</span>
+                                <span className="ml-1 text-xs text-white/40">({mod.levels} {t("home.missions_levels")})</span>
                               )}
                             </span>
                             <span className="flex items-center gap-1 text-xs font-semibold text-lyoko-blue">
-                              Lancer <ArrowRight size={14} />
+                              {t("home.missions_launch")} <ArrowRight size={14} />
                             </span>
                           </Link>
                         );
@@ -159,13 +163,13 @@ export function MissionsSection() {
                         >
                           <ModIcon size={18} style={{ color: mod.color }} />
                           <span className="flex-1 text-sm font-medium text-white/80">
-                            {mod.name}
+                            {t("modules_data." + mod.id + ".name")}
                             {mod.levels > 0 && (
-                              <span className="ml-1 text-xs text-white/40">({mod.levels} niveaux)</span>
+                              <span className="ml-1 text-xs text-white/40">({mod.levels} {t("home.missions_levels")})</span>
                             )}
                           </span>
                           <span className="flex items-center gap-1 text-xs text-white/30">
-                            Bientôt <Lock size={12} />
+                            {t("home.missions_soon")} <Lock size={12} />
                           </span>
                         </div>
                       );

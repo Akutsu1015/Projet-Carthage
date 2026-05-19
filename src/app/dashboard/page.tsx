@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import { useVideoTransition } from "@/components/video-transition";
 import { MODULES } from "@/lib/constants";
 import {
@@ -26,6 +27,7 @@ const ICON_MAP: Record<string, any> = {
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
+  const { lang, t } = useTranslation();
   const router = useRouter();
   const { playTransition } = useVideoTransition();
   const [levelUp, setLevelUp] = useState<number | null>(null);
@@ -86,7 +88,7 @@ export default function DashboardPage() {
                 {user.displayName}
               </span>
             </h1>
-            <p className="text-sm text-white/50">@{user.username} · Niveau {user.level}</p>
+            <p className="text-sm text-white/50">@{user.username} · {t("dashboard.level")} {user.level}</p>
             {/* XP Bar */}
             <div className="mt-2 max-w-md">
               <div className="mb-1 flex items-center justify-between text-xs text-white/40">
@@ -108,10 +110,10 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
         <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
           {[
-            { icon: Star, label: "XP Total", value: user.xp.toLocaleString(), color: "text-carthage-gold" },
-            { icon: Trophy, label: "Niveau", value: user.level.toString(), color: "text-lyoko-purple" },
-            { icon: Flame, label: "Streak", value: `${user.streak} jours`, color: "text-xana-red" },
-            { icon: BookOpen, label: "Exercices", value: totalCompleted.toString(), color: "text-lyoko-green" },
+            { icon: Star, label: t("dashboard.xp_total"), value: user.xp.toLocaleString(), color: "text-carthage-gold" },
+            { icon: Trophy, label: t("dashboard.level"), value: user.level.toString(), color: "text-lyoko-purple" },
+            { icon: Flame, label: t("dashboard.streak"), value: `${user.streak} ${t("dashboard.streak_suffix")}`, color: "text-xana-red" },
+            { icon: BookOpen, label: t("dashboard.exercises_label"), value: totalCompleted.toString(), color: "text-lyoko-green" },
           ].map(({ icon: Icon, label, value, color }) => (
             <div key={label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-5 text-center transition-all hover:border-lyoko-blue/20 hover:shadow-[0_0_20px_rgba(0,212,255,0.1)]">
               <Icon className={`mx-auto mb-2 ${color}`} size={24} />
@@ -139,7 +141,7 @@ export default function DashboardPage() {
         {/* Courses */}
         <h2 className="mb-4 font-display text-lg font-bold text-white">
           <BookOpen className="mb-0.5 mr-2 inline-block text-lyoko-blue" size={20} />
-          Mes Modules
+          {t("dashboard.recent_exercises")}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {MODULES.map((mod) => {
@@ -158,8 +160,8 @@ export default function DashboardPage() {
                       <Icon size={20} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-white">{mod.name}</h3>
-                      <p className="text-xs text-white/40">{mod.levels > 0 ? `${mod.levels} niveaux` : "Bientôt"}</p>
+                      <h3 className="text-sm font-semibold text-white">{t("modules_data." + mod.id + ".name")}</h3>
+                      <p className="text-xs text-white/40">{mod.levels > 0 ? `${mod.levels} ${lang === "fr" ? (mod.levels > 1 ? "niveaux" : "niveau") : (mod.levels > 1 ? "levels" : "level")}` : t("common.loading")}</p>
                     </div>
                   </div>
 
@@ -179,11 +181,11 @@ export default function DashboardPage() {
                 <div className="border-t border-white/5 px-5 py-3">
                   {mod.available ? (
                     <button onClick={() => playTransition(mod.href)} className="flex w-full items-center justify-center gap-1.5 text-xs font-medium text-lyoko-blue transition-colors hover:text-lyoko-blue/80">
-                      <Play size={12} /> {completed > 0 ? "Continuer" : "Commencer"} <ArrowRight size={12} />
+                      <Play size={12} /> {completed > 0 ? t("dashboard.continue_btn") : t("dashboard.start_btn")} <ArrowRight size={12} />
                     </button>
                   ) : (
                     <span className="flex items-center justify-center gap-1.5 text-xs text-white/25">
-                      <Lock size={12} /> Prochainement
+                      <Lock size={12} /> {t("dashboard.soon_label")}
                     </span>
                   )}
                 </div>

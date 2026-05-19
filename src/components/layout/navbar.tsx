@@ -15,16 +15,17 @@ const PAYPAL_DONATE_URL =
 import { useAuth } from "@/lib/auth-context";
 import { useSound } from "@/lib/sound-manager";
 import { useTheme } from "next-themes";
+import { useTranslation } from "@/lib/translation-context";
 
 // ─── Nav link definitions ────────────────────────────────────────────────────
 
 const NAV_LINKS_DESKTOP = [
-  { href: "/exercises",     label: "Modules",       icon: GraduationCap },
-  { href: "/battle",        label: "Battle",        icon: Swords },
-  { href: "/playground",    label: "Playground",    icon: Code },
-  { href: "/leaderboard",   label: "Classement",    icon: Trophy },
-  { href: "/certification", label: "Certification", icon: Award },
-  { href: "/dashboard",     label: "Dashboard",     icon: LayoutDashboard },
+  { href: "/exercises",     labelKey: "nav.modules",       icon: GraduationCap },
+  { href: "/battle",        labelKey: "nav.battle",        icon: Swords },
+  { href: "/playground",    labelKey: "nav.playground",    icon: Code },
+  { href: "/leaderboard",   labelKey: "nav.classement",    icon: Trophy },
+  { href: "/certification", labelKey: "nav.certification", icon: Award },
+  { href: "/dashboard",     labelKey: "nav.dashboard",     icon: LayoutDashboard },
 ];
 
 // ─── Language toggle ─────────────────────────────────────────────────────────
@@ -35,29 +36,11 @@ const LANGS = [
 ] as const;
 type Lang = "fr" | "en";
 
-function useLanguage() {
-  const [lang, setLangState] = useState<Lang>("fr");
-  useEffect(() => {
-    const stored = localStorage.getItem("site-lang") as Lang | null;
-    if (stored === "fr" || stored === "en") setLangState(stored);
-  }, []);
-  const toggle = () => {
-    setLangState((prev) => {
-      const next: Lang = prev === "fr" ? "en" : "fr";
-      localStorage.setItem("site-lang", next);
-      return next;
-    });
-  };
-  return { lang, toggle };
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
-
 export function Navbar() {
   const { user, logout } = useAuth();
   const { toggle: toggleSound, enabled: soundEnabled } = useSound();
   const { theme, setTheme } = useTheme();
-  const { lang, toggle: toggleLang } = useLanguage();
+  const { lang, setLang, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -81,6 +64,8 @@ export function Navbar() {
       return () => { document.body.style.overflow = prev; };
     }
   }, [mobileOpen]);
+
+  const toggleLang = () => setLang(lang === 'fr' ? 'en' : 'fr');
 
   const currentLang = LANGS.find((l) => l.code === lang) ?? LANGS[0];
   const nextLang    = LANGS.find((l) => l.code !== lang) ?? LANGS[1];
@@ -107,14 +92,14 @@ export function Navbar() {
 
           {/* Desktop Links */}
           <ul className="hidden items-center gap-1 lg:flex" role="navigation">
-            {NAV_LINKS_DESKTOP.map(({ href, label, icon: Icon }) => (
+            {NAV_LINKS_DESKTOP.map(({ href, labelKey, icon: Icon }) => (
               <li key={href}>
                 <Link
                   href={href}
                   className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-[0.85rem] font-medium text-white/70 transition-colors hover:text-lyoko-blue hover:drop-shadow-[0_0_10px_rgba(0,212,255,0.5)]"
                 >
                   <Icon size={15} />
-                  {label}
+                  {t(labelKey)}
                 </Link>
               </li>
             ))}
@@ -310,7 +295,7 @@ export function Navbar() {
 
         {/* Nav links */}
         <nav className="mt-4 flex flex-col gap-1 px-2" aria-label="Navigation principale">
-          {NAV_LINKS_DESKTOP.map(({ href, label, icon: Icon }) => (
+          {NAV_LINKS_DESKTOP.map(({ href, labelKey, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -318,7 +303,7 @@ export function Navbar() {
               className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/5 hover:text-lyoko-blue"
             >
               <Icon size={18} className="text-white/40" />
-              {label}
+              {t(labelKey)}
             </Link>
           ))}
           {user && user.role === "admin" && (

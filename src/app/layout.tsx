@@ -7,6 +7,7 @@ import { VideoTransitionProvider } from "@/components/video-transition";
 import { SoundProvider } from "@/lib/sound-manager";
 import { ThemeProvider } from "next-themes";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { TranslationProvider } from "@/lib/translation-context";
 import { SITE } from "@/lib/constants";
 import "./globals.css";
 
@@ -157,16 +158,18 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light"]}>
-          <AuthProvider>
-            <AnalyticsTracker />
-            <SoundProvider>
-              <VideoTransitionProvider>
-                <Navbar />
-                <main>{children}</main>
-                <Footer />
-              </VideoTransitionProvider>
-            </SoundProvider>
-          </AuthProvider>
+          <TranslationProvider>
+            <AuthProvider>
+              <AnalyticsTracker />
+              <SoundProvider>
+                <VideoTransitionProvider>
+                  <Navbar />
+                  <main>{children}</main>
+                  <Footer />
+                </VideoTransitionProvider>
+              </SoundProvider>
+            </AuthProvider>
+          </TranslationProvider>
         </ThemeProvider>
         <JsonLd />
         <OrganizationJsonLd />

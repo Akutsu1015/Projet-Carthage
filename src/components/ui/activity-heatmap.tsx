@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Activity } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 const STORAGE_KEY = "activity_log_v1";
 
@@ -41,13 +42,13 @@ function getIntensity(count: number): string {
     return "bg-lyoko-green border-lyoko-green/50 shadow-[0_0_6px_rgba(0,255,136,0.4)]";
 }
 
-const DAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"];
-
 export function ActivityHeatmap() {
+    const { lang } = useTranslation();
     const [log, setLog] = useState<ActivityLog>({});
     const days = getLast30Days();
     const totalExercises = Object.values(log).reduce((a, b) => a + b, 0);
     const activeDays = Object.values(log).filter((v) => v > 0).length;
+    const dayLabels = lang === "fr" ? ["L", "M", "M", "J", "V", "S", "D"] : ["M", "T", "W", "T", "F", "S", "S"];
 
     useEffect(() => {
         try {
@@ -72,19 +73,29 @@ export function ActivityHeatmap() {
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Activity size={16} className="text-lyoko-green" />
-                    <span className="font-display text-sm font-bold text-white">Activité</span>
-                    <span className="text-xs text-white/40">30 derniers jours</span>
+                    <span className="font-display text-sm font-bold text-white">
+                        {lang === "fr" ? "Activité" : "Activity"}
+                    </span>
+                    <span className="text-xs text-white/40">
+                        {lang === "fr" ? "30 derniers jours" : "Last 30 days"}
+                    </span>
                 </div>
                 <div className="flex gap-4 text-right text-xs text-white/40">
-                    <span><span className="font-bold text-white">{totalExercises}</span> exercices</span>
-                    <span><span className="font-bold text-white">{activeDays}</span> jours actifs</span>
+                    <span>
+                        <span className="font-bold text-white">{totalExercises}</span>{" "}
+                        {lang === "fr" ? (totalExercises !== 1 ? "exercices" : "exercice") : (totalExercises !== 1 ? "exercises" : "exercise")}
+                    </span>
+                    <span>
+                        <span className="font-bold text-white">{activeDays}</span>{" "}
+                        {lang === "fr" ? (activeDays !== 1 ? "jours actifs" : "jour actif") : (activeDays !== 1 ? "active days" : "active day")}
+                    </span>
                 </div>
             </div>
 
             <div className="flex gap-1">
                 {/* Day labels column */}
                 <div className="mr-1 flex flex-col gap-1">
-                    {DAY_LABELS.map((l, i) => (
+                    {dayLabels.map((l, i) => (
                         <div key={i} className="flex h-4 w-4 items-center justify-center text-[0.55rem] text-white/20">
                             {i % 2 === 0 ? l : ""}
                         </div>
@@ -101,7 +112,7 @@ export function ActivityHeatmap() {
                             return (
                                 <div
                                     key={di}
-                                    title={`${day}: ${count} exercice${count !== 1 ? "s" : ""}`}
+                                    title={lang === "fr" ? `${day}: ${count} exercice${count !== 1 ? "s" : ""}` : `${day}: ${count} exercise${count !== 1 ? "s" : ""}`}
                                     className={`h-4 w-4 rounded-sm border transition-all ${getIntensity(count)} ${isToday ? "ring-1 ring-lyoko-blue ring-offset-1 ring-offset-dark-surface" : ""}`}
                                 />
                             );
@@ -112,11 +123,15 @@ export function ActivityHeatmap() {
 
             {/* Legend */}
             <div className="mt-3 flex items-center gap-1.5 justify-end">
-                <span className="text-[0.6rem] text-white/25">Moins</span>
+                <span className="text-[0.6rem] text-white/25">
+                    {lang === "fr" ? "Moins" : "Less"}
+                </span>
                 {["bg-white/[0.04]", "bg-lyoko-blue/30", "bg-lyoko-blue/55", "bg-lyoko-green/60", "bg-lyoko-green"].map((cls, i) => (
                     <div key={i} className={`h-3 w-3 rounded-sm ${cls}`} />
                 ))}
-                <span className="text-[0.6rem] text-white/25">Plus</span>
+                <span className="text-[0.6rem] text-white/25">
+                    {lang === "fr" ? "Plus" : "More"}
+                </span>
             </div>
         </div>
     );

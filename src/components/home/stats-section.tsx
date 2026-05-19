@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { Code, Users, BookOpen, Trophy } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 const STATS = [
-  { icon: Code, value: 1100, suffix: "+", label: "Exercices interactifs", color: "#00d4ff" },
-  { icon: BookOpen, value: 8, suffix: "", label: "Modules de formation", color: "#00ff88" },
-  { icon: Trophy, value: 3, suffix: "", label: "Blocs de compétences", color: "#fbbf24" },
-  { icon: Users, value: 100, suffix: "%", label: "Gratuit & sans pub", color: "#a855f7" },
+  { icon: Code, value: 1100, suffix: "+", key: "stat_exercises", color: "#00d4ff" },
+  { icon: BookOpen, value: 8, suffix: "", key: "stat_modules", color: "#00ff88" },
+  { icon: Trophy, value: 3, suffix: "", key: "stat_blocs", color: "#fbbf24" },
+  { icon: Users, value: 100, suffix: "%", key: "stat_free", color: "#a855f7" },
 ];
 
 function AnimatedCounter({ target, suffix }: { target: number; suffix: string }) {
@@ -39,6 +40,8 @@ function AnimatedCounter({ target, suffix }: { target: number; suffix: string })
 }
 
 export function StatsSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden py-20">
       {/* Subtle radial glow */}
@@ -51,7 +54,7 @@ export function StatsSection() {
           <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             {STATS.map((stat, i) => (
               <motion.div
-                key={stat.label}
+                key={stat.key}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -82,7 +85,7 @@ export function StatsSection() {
                 </div>
 
                 <p className="relative mt-2 text-xs font-medium text-white/50">
-                  {stat.label}
+                  {t(`home.${stat.key}`)}
                 </p>
               </motion.div>
             ))}

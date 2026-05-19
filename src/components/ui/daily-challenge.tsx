@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Zap, Calendar, ArrowRight, Check } from "lucide-react";
 import { MODULES } from "@/lib/constants";
+import { useTranslation } from "@/lib/translation-context";
 import Link from "next/link";
 
 function getTodayKey() {
@@ -24,6 +25,7 @@ function getDailyExercise() {
 }
 
 export function DailyChallenge() {
+    const { lang } = useTranslation();
     const [completed, setCompleted] = useState(false);
     const { mod, exIndex } = getDailyExercise();
     const todayKey = getTodayKey();
@@ -39,7 +41,9 @@ export function DailyChallenge() {
         <div className="mb-8 overflow-hidden rounded-2xl border border-carthage-gold/25 bg-gradient-to-br from-carthage-gold/[0.07] to-transparent">
             <div className="flex items-center gap-3 border-b border-carthage-gold/15 px-5 py-3">
                 <Calendar size={16} className="text-carthage-gold" />
-                <span className="font-display text-sm font-bold text-carthage-gold">Défi du Jour</span>
+                <span className="font-display text-sm font-bold text-carthage-gold">
+                    {lang === "fr" ? "Défi du Jour" : "Daily Challenge"}
+                </span>
                 <span className="ml-auto rounded-full border border-carthage-gold/30 bg-carthage-gold/10 px-2.5 py-0.5 text-[0.65rem] font-bold text-carthage-gold">
                     ×2 XP
                 </span>
@@ -56,13 +60,15 @@ export function DailyChallenge() {
 
                 <div className="flex-1 min-w-0">
                     <p className="text-[0.7rem] text-white/40 uppercase tracking-wider mb-0.5">
-                        {mod.name} · Exercice #{exIndex}
+                        {mod.name} · {lang === "fr" ? "Exercice #" : "Exercise #"}{exIndex}
                     </p>
                     <h3 className="font-display text-sm font-bold text-white truncate">
-                        Relève le défi quotidien !
+                        {lang === "fr" ? "Relève le défi quotidien !" : "Take on the daily challenge!"}
                     </h3>
                     <p className="text-xs text-white/50 mt-0.5">
-                        {completed ? "✅ Défi complété aujourd'hui !" : "Double ton XP sur cet exercice"}
+                        {completed
+                            ? (lang === "fr" ? "✅ Défi complété aujourd'hui !" : "✅ Daily challenge completed today!")
+                            : (lang === "fr" ? "Double ton XP sur cet exercice" : "Double your XP on this exercise")}
                     </p>
                 </div>
 
@@ -79,7 +85,7 @@ export function DailyChallenge() {
                         }}
                         className="flex flex-shrink-0 items-center gap-1.5 rounded-xl border border-carthage-gold/40 bg-carthage-gold/10 px-4 py-2 text-xs font-semibold text-carthage-gold transition-all hover:bg-carthage-gold/20 hover:shadow-[0_0_16px_rgba(251,191,36,0.2)]"
                     >
-                        Jouer <ArrowRight size={13} />
+                        {lang === "fr" ? "Jouer" : "Play"} <ArrowRight size={13} />
                     </Link>
                 )}
             </div>

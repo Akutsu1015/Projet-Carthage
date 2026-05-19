@@ -42,6 +42,12 @@ export default function BattleLobbyPage() {
   const [searchTime, setSearchTime] = useState(0);
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Log socket connection status
+  useEffect(() => {
+    console.log("[BattlePage] Socket connected:", socket.connected);
+    console.log("[BattlePage] Socket connection error:", socket.connectionError);
+  }, [socket.connected, socket.connectionError]);
+
   // Fetch stats + challenge count on mount
   useEffect(() => {
     async function load() {
@@ -278,7 +284,10 @@ export default function BattleLobbyPage() {
                   {/* Queue button */}
                   {!socket.connected && (
                     <div className="mb-3 rounded-lg border border-xana-red/30 bg-xana-red/10 px-4 py-3 text-sm text-xana-red">
-                      <span className="font-semibold">Connexion en cours...</span> Veuillez patienter avant de rejoindre la file.
+                      <span className="font-semibold">
+                        {socket.connectionError ? `Erreur: ${socket.connectionError}` : "Connexion en cours..."}
+                      </span>
+                      {!socket.connectionError && " Veuillez patienter avant de rejoindre la file."}
                     </div>
                   )}
                   {socket.inQueue ? (

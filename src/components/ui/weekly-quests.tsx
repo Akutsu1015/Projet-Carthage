@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Swords, Check, Flame, BookOpen, Zap, Target } from "lucide-react";
 
+import { useTranslation } from "@/lib/translation-context";
+
 /* ═══ TYPES ═══ */
 interface Quest {
     id: string;
@@ -101,6 +103,7 @@ const QUEST_TEMPLATES = [
 /* ═══ COMPONENT ═══ */
 export function WeeklyQuests() {
     const { user } = useAuth();
+    const { lang } = useTranslation();
     const [quests, setQuests] = useState<Quest[]>([]);
     const weekKey = getWeekKey();
     const storageKey = `weekly_quests_${weekKey}`;
@@ -139,10 +142,34 @@ export function WeeklyQuests() {
                 } catch { /* ignore */ }
             }
 
+            const titleMap: Record<string, string> = lang === "fr" ? {
+                exercises: "Machine de Guerre",
+                streak: "Flamme Éternelle",
+                xp: "Chasseur d'XP",
+                modules: "Explorateur",
+            } : {
+                exercises: "War Machine",
+                streak: "Eternal Flame",
+                xp: "XP Hunter",
+                modules: "Explorer",
+            };
+
+            const descMap: Record<string, string> = lang === "fr" ? {
+                exercises: "exercices cette semaine",
+                streak: "jours de streak consécutifs",
+                xp: "XP gagnés cette semaine",
+                modules: "modules différents pratiqués",
+            } : {
+                exercises: "exercises this week",
+                streak: "consecutive streak days",
+                xp: "XP earned this week",
+                modules: "different modules practiced",
+            };
+
             return {
                 id: tmpl.id,
-                title: tmpl.title,
-                description: `${target} ${tmpl.description}`,
+                title: titleMap[tmpl.id] || tmpl.title,
+                description: `${target} ${descMap[tmpl.id] || tmpl.description}`,
                 icon: tmpl.icon,
                 color: tmpl.color,
                 target,
@@ -153,7 +180,7 @@ export function WeeklyQuests() {
         });
 
         setQuests(built);
-    }, [user, storageKey]);
+    }, [user, storageKey, lang]);
 
     const completedCount = quests.filter((q) => q.completed).length;
 
@@ -165,7 +192,7 @@ export function WeeklyQuests() {
             <div className="flex items-center gap-3 border-b border-lyoko-purple/15 px-5 py-3">
                 <Swords size={16} className="text-lyoko-purple" />
                 <span className="font-display text-sm font-bold text-lyoko-purple">
-                    Quêtes Hebdomadaires
+                    {lang === "fr" ? "Quêtes Hebdomadaires" : "Weekly Quests"}
                 </span>
                 <span className="ml-auto rounded-full border border-lyoko-purple/30 bg-lyoko-purple/10 px-2.5 py-0.5 text-[0.65rem] font-bold text-lyoko-purple">
                     {completedCount}/{quests.length}

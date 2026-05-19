@@ -2,22 +2,25 @@
 
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/translation-context";
 import {
   Zap, Star, Medal, Code, Volume2, Puzzle, HelpCircle, Flame, BarChart3,
 } from "lucide-react";
 
 const FEATURES = [
-  { icon: Star, title: "Système XP", desc: "Gagnez de l'expérience à chaque exercice réussi", color: "#fbbf24" },
-  { icon: Medal, title: "Badges", desc: "Débloquez des badges en progressant dans les modules", color: "#a855f7" },
-  { icon: Code, title: "Éditeur Live", desc: "Codez directement dans le navigateur", color: "#00ff88" },
-  { icon: Volume2, title: "Sons & FX", desc: "Effets sonores immersifs à chaque action", color: "#ff2244" },
-  { icon: Puzzle, title: "Puzzles", desc: "Exercices de réordonnancement de code", color: "#00d4ff" },
-  { icon: HelpCircle, title: "Quiz", desc: "Testez vos connaissances à chaque étape", color: "#00d4ff" },
-  { icon: Flame, title: "Streaks", desc: "Maintenez votre série quotidienne", color: "#ff6644" },
-  { icon: BarChart3, title: "Dashboard", desc: "Suivez votre progression en temps réel", color: "#00d4ff" },
+  { icon: Star, key: "xp", color: "#fbbf24" },
+  { icon: Medal, key: "badges", color: "#a855f7" },
+  { icon: Code, key: "editor", color: "#00ff88" },
+  { icon: Volume2, key: "sound", color: "#ff2244" },
+  { icon: Puzzle, key: "puzzles", color: "#00d4ff" },
+  { icon: HelpCircle, key: "quiz", color: "#00d4ff" },
+  { icon: Flame, key: "streaks", color: "#ff6644" },
+  { icon: BarChart3, key: "dashboard", color: "#00d4ff" },
 ];
 
 export function FeaturesSection() {
+  const { t } = useTranslation();
+
   return (
     <section id="features" className="relative overflow-hidden py-24">
       {/* Background grid pattern */}
@@ -34,16 +37,16 @@ export function FeaturesSection() {
         <ScrollReveal>
           <h2 className="mb-2 text-center font-display text-[clamp(1.5rem,4vw,2.5rem)] font-extrabold">
             <Zap className="mb-1 mr-2 inline-block text-lyoko-green" size={28} />
-            Système de <span className="text-lyoko-green">Combat</span>
+            {t("home.features_heading")} <span className="text-lyoko-green">{t("home.features_heading_green")}</span>
           </h2>
           <p className="mb-14 text-center text-sm text-white/50">
-            Vos armes pour vaincre XANA
+            {t("home.features_subtitle")}
           </p>
         </ScrollReveal>
 
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
           {FEATURES.map((feat, i) => (
-            <ScrollReveal key={feat.title} delay={i * 0.06}>
+            <ScrollReveal key={feat.key} delay={i * 0.06}>
               <motion.div
                 whileHover={{ y: -6, scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -84,9 +87,11 @@ export function FeaturesSection() {
                   <feat.icon size={22} />
                 </div>
                 <h3 className="relative mb-1.5 font-display text-sm font-semibold text-white">
-                  {feat.title}
+                  {t("home.features." + feat.key + ".title")}
                 </h3>
-                <p className="relative text-xs leading-relaxed text-white/45">{feat.desc}</p>
+                <p className="relative text-xs leading-relaxed text-white/45">
+                  {t("home.features." + feat.key + ".desc")}
+                </p>
               </motion.div>
             </ScrollReveal>
           ))}

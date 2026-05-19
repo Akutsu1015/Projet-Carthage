@@ -1,0 +1,334 @@
+{
+  "nav": {
+    "modules": "Modules",
+    "battle": "Battle",
+    "playground": "Playground",
+    "classement": "Leaderboard",
+    "certification": "Certification",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "hero_title": "Learn to code with Projet Carthage",
+    "hero_subtitle": "Interactive learning platform for developers",
+    "cta_start": "Get Started",
+    "features_title": "Why choose us?",
+    "modules_title": "Our modules",
+    "stats_title": "Our statistics",
+    "trust_badge": "100% Free · Ad-free · Open source",
+    "hero_title_part1": "Learn to code.",
+    "hero_title_part2": "Save Lyoko.",
+    "hero_description": "The online learning platform with 1,100+ interactive exercises, an AI assistant, and real-time battles. Join Project Carthage.",
+    "pills_more": "+ 4 languages",
+    "cta_start_free": "Start for Free",
+    "cta_view_courses": "View Courses",
+    "proof_no_card": "No credit card required",
+    "proof_battle": "Online Battle Code",
+    "proof_gamified": "XP & badges system",
+    "achievement_completed": "Exercise completed",
+    "achievement_level": "Lyoko Developer",
+    "achievement_level_title": "Level 12",
+    "ide_comment": "// Mission: defeat XANA",
+    "ide_status": "Exercise in progress",
+    "scroll_discover": "Discover",
+    "stat_exercises": "Interactive exercises",
+    "stat_modules": "Training modules",
+    "stat_blocs": "Skill blocks",
+    "stat_free": "Free & ad-free",
+    "modules_heading": "All",
+    "modules_heading_gold": "Modules",
+    "modules_subtitle": "Each module is a weapon against XANA",
+    "modules_btn_start": "Start",
+    "modules_btn_soon": "Soon",
+    "features_heading": "Combat",
+    "features_heading_green": "System",
+    "features_subtitle": "Your weapons to defeat XANA",
+    "features": {
+      "xp": {
+        "title": "XP System",
+        "desc": "Earn experience with each successful exercise"
+      },
+      "badges": {
+        "title": "Badges",
+        "desc": "Unlock badges as you progress through the modules"
+      },
+      "editor": {
+        "title": "Live Editor",
+        "desc": "Code directly inside the browser"
+      },
+      "sound": {
+        "title": "Sound & FX",
+        "desc": "Immersive sound effects for every action"
+      },
+      "puzzles": {
+        "title": "Puzzles",
+        "desc": "Code reordering exercises"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "desc": "Test your knowledge at every step"
+      },
+      "streaks": {
+        "title": "Streaks",
+        "desc": "Maintain your daily learning streak"
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "desc": "Track your progress in real time"
+      }
+    },
+    "missions_heading": "Your",
+    "missions_heading_red": "3 Missions",
+    "missions_subtitle": "Complete all 3 blocks to exterminate XANA for good",
+    "xana_threat": "XANA's Power",
+    "xana_threat_desc": "Each completed block reduces XANA's power by 33%. Complete all 3 to eliminate it.",
+    "missions_launch": "Launch",
+    "missions_soon": "Soon",
+    "missions_levels": "levels",
+    "story_heading": "The Story of",
+    "story_heading_blue": "Project Carthage",
+    "story_subtitle": "Franz Hopper's ultimate project to save humanity",
+    "story": {
+      "hopper": {
+        "title": "Franz Hopper",
+        "alt": "Franz Hopper, creator of the supercomputer and Lyoko",
+        "text": "A genius scientist, Franz Hopper created the <strong class=\"text-lyoko-blue\">supercomputer</strong> and the virtual world <strong class=\"text-lyoko-green\">Lyoko</strong>. His ultimate project: <em>Carthage</em>, a program capable of countering any digital threat."
+      },
+      "lyoko": {
+        "title": "The World of Lyoko",
+        "alt": "The virtual world Lyoko composed of digital sectors",
+        "text": "Lyoko is a virtual universe composed of digital sectors. This is where the battle against XANA takes place. Every line of code you write strengthens this world's defenses."
+      },
+      "xana": {
+        "title": "The XANA Threat",
+        "alt": "XANA, the malevolent artificial intelligence",
+        "text": "<strong class=\"text-xana-red\">XANA</strong> is a malevolent artificial intelligence seeking to destroy Lyoko and invade the real world. Only complete mastery of coding can stop it."
+      }
+    },
+    "cta_franz_alt": "Franz Hopper, creator of Project Carthage",
+    "cta_quote": "“Coding is your weapon. Lyoko relies on you.”",
+    "cta_author": "— Franz Hopper, creator of Project Carthage",
+    "badge_free": "100% FREE",
+    "badge_no_ads": "AD-FREE",
+    "badge_open_source": "OPEN SOURCE"
+  },
+  "auth": {
+    "login_title": "Login",
+    "register_title": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "username": "Username",
+    "display_name": "Display Name",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "login_button": "Sign in",
+    "register_button": "Sign up",
+    "google_login": "Continue with Google"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "xp": "XP",
+    "level": "Level",
+    "streak": "Streak",
+    "badges": "Badges",
+    "progress": "Progress",
+    "recent_exercises": "Recent exercises",
+    "continue_learning": "Continue learning",
+    "achievements": "Achievements",
+    "xp_total": "Total XP",
+    "streak_suffix": "days",
+    "exercises_label": "Exercises",
+    "continue_btn": "Continue",
+    "start_btn": "Start",
+    "soon_label": "Soon"
+  },
+  "exercises": {
+    "title": "Modules",
+    "start": "Start",
+    "continue": "Continue",
+    "completed": "Completed",
+    "part": "Part",
+    "question": "Question",
+    "submit": "Submit",
+    "next": "Next",
+    "previous": "Previous",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "score": "Score",
+    "time": "Time",
+    "subtitle": "{availableCount} modules available · {levelsCount} interactive exercises · Quizzes, puzzles, and code",
+    "available_title": "Available modules",
+    "upcoming_title": "Coming Soon",
+    "exercises_suffix": "exercises",
+    "in_development": "In development"
+  },
+  "battle": {
+    "title": "Battle",
+    "find_opponent": "Find opponent",
+    "waiting": "Waiting for an opponent...",
+    "your_turn": "Your turn",
+    "opponent_turn": "Opponent's turn",
+    "you_won": "You won!",
+    "you_lost": "You lost",
+    "draw": "Draw",
+    "play_again": "Play again"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "player": "Player",
+    "xp": "XP",
+    "level": "Level",
+    "streak": "Streak"
+  },
+  "certification": {
+    "title": "Certifications",
+    "description": "Prove your skills with an official certificate",
+    "exam_title": "Exam",
+    "questions": "questions",
+    "passing_score": "Passing score",
+    "price": "Price",
+    "start_exam": "Take exam",
+    "already_certified": "Already certified",
+    "exam_passed": "Exam passed!",
+    "exam_failed": "Exam failed",
+    "score": "Score",
+    "get_certificate": "Get certificate",
+    "my_certifications": "My certifications",
+    "verification_code": "Verification code",
+    "issued_at": "Issued on",
+    "verify": "Verify",
+    "success_desc": "Your certificate is now available in your dashboard.",
+    "certified_badge": "✓ Certified",
+    "how_it_works_title": "How it works",
+    "step_1": "1. Take the free exam of 15 questions (1 min/question)",
+    "step_2": "2. Get at least 67% correct answers to pass",
+    "step_3": "3. Pay to receive your official certificate with verification code",
+    "step_4": "4. Share your certificate with recruiters — verifiable online",
+    "prev_btn": "Previous",
+    "next_btn": "Next",
+    "finish_btn": "Finish exam",
+    "passed_msg": "Exam passed!",
+    "failed_msg": "Exam failed",
+    "results_detail": "Answer details",
+    "verified_on": "Issued on",
+    "passing_threshold": "67% to pass",
+    "info_desc": "Your certificate includes a unique verification code, shareable with recruiters and employers.",
+    "back_to": "Back to",
+    "how_it_works_sub": "15 questions — 67% to pass"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "overview": "Overview",
+    "users": "Users",
+    "analytics": "Analytics",
+    "bans": "Bans",
+    "create_user": "Create user",
+    "total_users": "Total users",
+    "active_users": "Active users",
+    "total_views": "Total views",
+    "avg_session": "Avg session",
+    "banned_ips": "Banned IPs",
+    "ban_ip": "Ban IP",
+    "unban_ip": "Unban IP",
+    "set_role": "Set role",
+    "delete_user": "Delete user",
+    "create": "Create",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "modules_data": {
+    "frontend": {
+      "name": "Front-End",
+      "description": "HTML, CSS, Bootstrap, Bulma, SCSS, JS DOM — 250 levels"
+    },
+    "javascript": {
+      "name": "JavaScript",
+      "description": "The language of the modern and interactive web — 102 levels"
+    },
+    "python": {
+      "name": "Python",
+      "description": "AI, data science, and automation — 120 levels"
+    },
+    "csharp": {
+      "name": "C# & .NET",
+      "description": "Desktop and server applications — 120 levels"
+    },
+    "dart": {
+      "name": "Dart & Flutter",
+      "description": "Multiplatform mobile applications — 150 levels"
+    },
+    "react": {
+      "name": "React",
+      "description": "Modern and responsive user interfaces — 120 levels"
+    },
+    "nodejs": {
+      "name": "Node.js",
+      "description": "JavaScript backend and APIs — 120 levels"
+    },
+    "cpp": {
+      "name": "C / C++",
+      "description": "Low-level system programming — 120 levels"
+    }
+  },
+  "blocs_data": {
+    "fullstack": {
+      "name": "Fullstack Block",
+      "description": "Master complete web development: from front-end to back-end. Build Lyoko's interfaces and the supercomputer's servers.",
+      "sector": "Web Sector"
+    },
+    "mobile": {
+      "name": "Mobile Block",
+      "description": "Develop mobile apps to communicate with Lyoko from anywhere. The link between the real and virtual worlds.",
+      "sector": "Mobile Sector"
+    },
+    "desktop": {
+      "name": "Desktop Block",
+      "description": "Program the supercomputer's software. The heart of the machine running Lyoko and combating XANA directly.",
+      "sector": "System Sector"
+    }
+  },
+  "footer": {
+    "slogan": "Franz Hopper's ultimate project. Learn to code, save Lyoko, exterminate XANA. <strong class=\"text-lyoko-green\">100% free, ad-free, subscription-free.</strong>",
+    "support_btn": "Support the project",
+    "open_source_title": "Open Source Project",
+    "open_source_desc": "Contribute to the code, suggest exercises, fix bugs — any help is welcome!",
+    "open_source_btn": "Contribute on GitHub",
+    "inspired": "PROJECT CARTHAGE. Inspired by Code Lyoko.",
+    "quiztimes": "QuizTimes — Online Multiplayer Quiz",
+    "made_with_1": "Made with",
+    "made_with_2": "to save the world",
+    "section_missions": "MISSIONS",
+    "section_modules": "MODULES",
+    "section_nav": "NAVIGATION"
+  }
+}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import { useRouter } from "next/navigation";
 import {
   Shield, Award, CheckCircle2, XCircle, Clock, ArrowRight,
@@ -18,6 +19,7 @@ type Step = "list" | "exam" | "result" | "payment" | "success";
 
 export default function CertificationPage() {
   const { user, isLoading } = useAuth();
+  const { lang, t } = useTranslation();
   const router = useRouter();
   const params = useSearchParams();
   const [exams, setExams] = useState<ExamInfo[]>([]);
@@ -120,7 +122,7 @@ export default function CertificationPage() {
   };
 
   if (isLoading || !user) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-950"><div className="animate-pulse text-cyan-400 font-[family-name:var(--font-orbitron)]">Chargement...</div></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-gray-950"><div className="animate-pulse text-cyan-400 font-[family-name:var(--font-orbitron)]">{t("common.loading")}</div></div>;
   }
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
@@ -145,19 +147,19 @@ export default function CertificationPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <Shield className="w-14 h-14 text-cyan-400 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold font-[family-name:var(--font-orbitron)] text-cyan-400">Certifications</h1>
-          <p className="text-gray-400 mt-2">Prouvez vos compétences avec un certificat officiel Projet Carthage</p>
+          <h1 className="text-3xl font-bold font-[family-name:var(--font-orbitron)] text-cyan-400">{t("certification.title")}</h1>
+          <p className="text-gray-400 mt-2">{t("certification.description")}</p>
         </div>
 
         {/* ═══ SUCCESS ═══ */}
         {step === "success" && (
           <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-8 text-center mb-8">
             <CheckCircle2 className="w-16 h-16 text-green-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-green-400 mb-2">Paiement confirmé !</h2>
-            <p className="text-gray-300 mb-4">Votre certificat est maintenant disponible dans votre dashboard.</p>
+            <h2 className="text-2xl font-bold text-green-400 mb-2">{t("certification.exam_passed")}</h2>
+            <p className="text-gray-300 mb-4">{t("certification.success_desc")}</p>
             <div className="flex justify-center gap-3">
-              <Link href="/dashboard" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium transition-colors">Mon Dashboard</Link>
-              <button onClick={() => { setStep("list"); fetchExams(); }} className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors">Voir mes certifications</button>
+              <Link href="/dashboard" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium transition-colors">{t("dashboard.title")}</Link>
+              <button onClick={() => { setStep("list"); fetchExams(); }} className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors">{t("certification.my_certifications")}</button>
             </div>
           </div>
         )}
@@ -208,14 +210,14 @@ export default function CertificationPage() {
                 disabled={currentQ === 0}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:opacity-30 rounded-lg text-sm transition-colors"
               >
-                Précédent
+                {t("certification.prev_btn")}
               </button>
               {currentQ < questions.length - 1 ? (
                 <button
                   onClick={() => setCurrentQ(currentQ + 1)}
                   className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Suivant
+                  {t("certification.next_btn")}
                 </button>
               ) : (
                 <button
@@ -223,7 +225,7 @@ export default function CertificationPage() {
                   disabled={loading}
                   className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-30 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Terminer l&apos;examen
+                  {t("certification.finish_btn")}
                 </button>
               )}
             </div>
@@ -236,15 +238,15 @@ export default function CertificationPage() {
             <div className={`inline-flex p-6 rounded-full mb-6 ${result.passed ? "bg-green-500/20" : "bg-red-500/20"}`}>
               {result.passed ? <CheckCircle2 className="w-16 h-16 text-green-400" /> : <XCircle className="w-16 h-16 text-red-400" />}
             </div>
-            <h2 className="text-2xl font-bold mb-2">{result.passed ? "Examen réussi !" : "Examen non réussi"}</h2>
+            <h2 className="text-2xl font-bold mb-2">{result.passed ? t("certification.passed_msg") : t("certification.failed_msg")}</h2>
             <p className="text-gray-400 mb-6">
-              Score : <span className="text-white font-bold">{result.score}/{result.maxScore}</span> ({Math.round(result.score / result.maxScore * 100)}%)
-              — Seuil : 67%
+              {t("certification.score")} : <span className="text-white font-bold">{result.score}/{result.maxScore}</span> ({Math.round(result.score / result.maxScore * 100)}%)
+              — {t("certification.passing_threshold")}
             </p>
 
             {/* Results per question */}
             <div className="bg-gray-800/40 border border-gray-700/30 rounded-xl p-6 mb-6 text-left">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">Détail des réponses</h3>
+              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3">{t("certification.results_detail")}</h3>
               <div className="grid grid-cols-5 gap-2">
                 {questions.map((q, i) => (
                   <div key={q.id} className={`p-2 rounded text-center text-sm ${result.results[q.id] ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
@@ -258,10 +260,10 @@ export default function CertificationPage() {
               <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
                   <Award className="w-5 h-5 text-cyan-400" />
-                  Obtenez votre certificat officiel
+                  {lang === "fr" ? "Obtenez votre certificat officiel" : "Get your official certificate"}
                 </h3>
                 <p className="text-gray-400 text-sm mb-4">
-                  Votre certificat inclut un code de vérification unique, partageable avec les recruteurs et employeurs.
+                  {t("certification.info_desc")}
                 </p>
                 <button
                   onClick={startPayment}
@@ -269,13 +271,13 @@ export default function CertificationPage() {
                   className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 disabled:opacity-30 rounded-lg font-medium transition-all shadow-[0_4px_20px_rgba(0,212,255,0.3)]"
                 >
                   <CreditCard className="w-4 h-4 inline mr-2" />
-                  Obtenir le certificat — {selectedExam.price}€
+                  {t("certification.get_certificate")} — {selectedExam.price}€
                 </button>
               </div>
             )}
 
             <button onClick={() => { setStep("list"); fetchExams(); }} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors">
-              Retour aux certifications
+              {t("certification.back_to")} {t("certification.title").toLowerCase()}
             </button>
           </div>
         )}
@@ -286,17 +288,17 @@ export default function CertificationPage() {
             {/* My certifications */}
             {certifications.length > 0 && (
               <div className="mb-10">
-                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Award className="w-5 h-5 text-cyan-400" />Mes certifications</h2>
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Award className="w-5 h-5 text-cyan-400" />{t("certification.my_certifications")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {certifications.map((c) => (
                     <div key={c.id} className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium text-white">{moduleIcons[c.module_id] || "📘"} {c.module_id}</span>
-                        <span className="text-xs text-green-400 bg-green-500/20 px-2 py-0.5 rounded">✓ Certifié</span>
+                        <span className="text-xs text-green-400 bg-green-500/20 px-2 py-0.5 rounded">{t("certification.certified_badge")}</span>
                       </div>
-                      <p className="text-sm text-gray-400">Score : {c.score}/{c.max_score} ({Math.round(c.score / c.max_score * 100)}%)</p>
+                      <p className="text-sm text-gray-400">{t("certification.score")} : {c.score}/{c.max_score} ({Math.round(c.score / c.max_score * 100)}%)</p>
                       <p className="text-xs text-gray-500 mt-1">Code : <span className="font-mono text-cyan-400">{c.verification_code}</span></p>
-                      <p className="text-xs text-gray-500">{new Date(c.issued_at).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}</p>
+                      <p className="text-xs text-gray-500">{new Date(c.issued_at).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
                     </div>
                   ))}
                 </div>
@@ -304,7 +306,7 @@ export default function CertificationPage() {
             )}
 
             {/* Available exams */}
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><BookOpen className="w-5 h-5 text-cyan-400" />Certifications disponibles</h2>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><BookOpen className="w-5 h-5 text-cyan-400" />{lang === "fr" ? `${t("certification.title")} disponibles` : `Available ${t("certification.title").toLowerCase()}s`}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {exams.map((exam) => {
                 const alreadyCertified = certifications.some(c => c.module_id === exam.moduleId);
@@ -314,24 +316,24 @@ export default function CertificationPage() {
                       <span className="text-2xl">{moduleIcons[exam.moduleId] || "📘"}</span>
                       <div>
                         <h3 className="font-semibold text-white">{exam.moduleName}</h3>
-                        <p className="text-xs text-gray-400">{exam.questionCount} questions — 67% pour réussir</p>
+                        <p className="text-xs text-gray-400">{exam.questionCount} questions — {t("certification.passing_threshold")}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-yellow-400" />
                         <span className="text-sm font-bold text-white">{exam.price}€</span>
-                        <span className="text-xs text-gray-500">/ certificat</span>
+                        <span className="text-xs text-gray-500">{lang === "fr" ? "/ certificat" : "/ certificate"}</span>
                       </div>
                       {alreadyCertified ? (
-                        <span className="text-xs text-green-400 bg-green-500/20 px-3 py-1.5 rounded-lg">Déjà certifié</span>
+                        <span className="text-xs text-green-400 bg-green-500/20 px-3 py-1.5 rounded-lg">{t("certification.already_certified")}</span>
                       ) : (
                         <button
                           onClick={() => startExam(exam)}
                           disabled={loading}
                           className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-30 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
                         >
-                          Passer l&apos;examen <ChevronRight className="w-4 h-4" />
+                          {t("certification.start_exam")} <ChevronRight className="w-4 h-4" />
                         </button>
                       )}
                     </div>
@@ -342,12 +344,12 @@ export default function CertificationPage() {
 
             {/* Info box */}
             <div className="mt-8 bg-gray-800/40 border border-gray-700/30 rounded-xl p-6">
-              <h3 className="font-semibold mb-3 flex items-center gap-2"><Lock className="w-4 h-4 text-cyan-400" />Comment ça marche ?</h3>
+              <h3 className="font-semibold mb-3 flex items-center gap-2"><Lock className="w-4 h-4 text-cyan-400" />{t("certification.how_it_works_title")}</h3>
               <div className="space-y-2 text-sm text-gray-400">
-                <p><span className="text-white font-medium">1.</span> Passez l&apos;examen gratuit de 15 questions (1 min/question)</p>
-                <p><span className="text-white font-medium">2.</span> Obtenez au moins 67% de bonnes réponses pour réussir</p>
-                <p><span className="text-white font-medium">3.</span> Payez pour recevoir votre certificat officiel avec code de vérification</p>
-                <p><span className="text-white font-medium">4.</span> Partagez votre certificat avec les recruteurs — vérifiable en ligne</p>
+                <p>{t("certification.step_1")}</p>
+                <p>{t("certification.step_2")}</p>
+                <p>{t("certification.step_3")}</p>
+                <p>{t("certification.step_4")}</p>
               </div>
             </div>
           </div>

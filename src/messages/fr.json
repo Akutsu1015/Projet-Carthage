@@ -1,0 +1,334 @@
+{
+  "nav": {
+    "modules": "Modules",
+    "battle": "Battle",
+    "playground": "Playground",
+    "classement": "Classement",
+    "certification": "Certification",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "hero_title": "Apprenez à coder avec Projet Carthage",
+    "hero_subtitle": "Plateforme d'apprentissage interactive pour développeurs",
+    "cta_start": "Commencer",
+    "features_title": "Pourquoi nous choisir ?",
+    "modules_title": "Nos modules",
+    "stats_title": "Nos statistiques",
+    "trust_badge": "100% Gratuit · Sans pub · Open source",
+    "hero_title_part1": "Apprenez à coder.",
+    "hero_title_part2": "Sauvez Lyoko.",
+    "hero_description": "La plateforme de formation en ligne avec <strong class=\"text-white/90\">1&nbsp;100+ exercices interactifs</strong>, un assistant IA et des battles en temps réel. Rejoignez le Projet Carthage.",
+    "pills_more": "+ 4 langages",
+    "cta_start_free": "Commencer gratuitement",
+    "cta_view_courses": "Voir les formations",
+    "proof_no_card": "Aucune carte de crédit",
+    "proof_battle": "Battle Code en ligne",
+    "proof_gamified": "Système XP & badges",
+    "achievement_completed": "Exercice complété",
+    "achievement_level": "Développeur Lyoko",
+    "achievement_level_title": "Niveau 12",
+    "ide_comment": "// Mission : vaincre XANA",
+    "ide_status": "Exercice en cours",
+    "scroll_discover": "Découvrir",
+    "stat_exercises": "Exercices interactifs",
+    "stat_modules": "Modules de formation",
+    "stat_blocs": "Blocs de compétences",
+    "stat_free": "Gratuit & sans pub",
+    "modules_heading": "Tous les",
+    "modules_heading_gold": "Modules",
+    "modules_subtitle": "Chaque module est une arme contre XANA",
+    "modules_btn_start": "Commencer",
+    "modules_btn_soon": "Bientôt",
+    "features_heading": "Système de",
+    "features_heading_green": "Combat",
+    "features_subtitle": "Vos armes pour vaincre XANA",
+    "features": {
+      "xp": {
+        "title": "Système XP",
+        "desc": "Gagnez de l'expérience à chaque exercice réussi"
+      },
+      "badges": {
+        "title": "Badges",
+        "desc": "Débloquez des badges en progressant dans les modules"
+      },
+      "editor": {
+        "title": "Éditeur Live",
+        "desc": "Codez directement dans le navigateur"
+      },
+      "sound": {
+        "title": "Sons & FX",
+        "desc": "Effets sonores immersifs à chaque action"
+      },
+      "puzzles": {
+        "title": "Puzzles",
+        "desc": "Exercices de réordonnancement de code"
+      },
+      "quiz": {
+        "title": "Quiz",
+        "desc": "Testez vos connaissances à chaque étape"
+      },
+      "streaks": {
+        "title": "Streaks",
+        "desc": "Maintenez votre série quotidienne"
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "desc": "Suivez votre progression en temps réel"
+      }
+    },
+    "missions_heading": "Vos",
+    "missions_heading_red": "3 Missions",
+    "missions_subtitle": "Complétez les 3 blocs pour exterminer XANA définitivement",
+    "xana_threat": "Puissance de XANA",
+    "xana_threat_desc": "Chaque bloc complété réduit la puissance de XANA de 33%. Complétez les 3 pour l'éliminer.",
+    "missions_launch": "Lancer",
+    "missions_soon": "Bientôt",
+    "missions_levels": "niveaux",
+    "story_heading": "L'Histoire du",
+    "story_heading_blue": "Projet Carthage",
+    "story_subtitle": "Le projet ultime de Franz Hopper pour sauver l'humanité",
+    "story": {
+      "hopper": {
+        "title": "Franz Hopper",
+        "alt": "Franz Hopper, créateur du supercalculateur et de Lyoko",
+        "text": "Scientifique de génie, Franz Hopper a créé le <strong class=\"text-lyoko-blue\">supercalculateur</strong> et le monde virtuel <strong class=\"text-lyoko-green\">Lyoko</strong>. Son projet ultime&nbsp;: <em>Carthage</em>, un programme capable de contrer toute menace numérique."
+      },
+      "lyoko": {
+        "title": "Le Monde de Lyoko",
+        "alt": "Le monde virtuel Lyoko composé de secteurs numériques",
+        "text": "Lyoko est un univers virtuel composé de secteurs numériques. C'est là que se joue la bataille contre XANA. Chaque ligne de code que vous écrivez renforce les défenses de ce monde."
+      },
+      "xana": {
+        "title": "La Menace XANA",
+        "alt": "XANA, l'intelligence artificielle malveillante",
+        "text": "<strong class=\"text-xana-red\">XANA</strong> est une intelligence artificielle malveillante qui cherche à détruire Lyoko et envahir le monde réel. Seule la maîtrise complète du code peut l'arrêter."
+      }
+    },
+    "cta_franz_alt": "Franz Hopper, créateur du Projet Carthage",
+    "cta_quote": "« Le code est votre arme. Lyoko compte sur vous. »",
+    "cta_author": "— Franz Hopper, créateur du Projet Carthage",
+    "badge_free": "100% GRATUIT",
+    "badge_no_ads": "SANS PUB",
+    "badge_open_source": "OPEN SOURCE"
+  },
+  "auth": {
+    "login_title": "Connexion",
+    "register_title": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "username": "Nom d'utilisateur",
+    "display_name": "Nom affiché",
+    "remember_me": "Se souvenir de moi",
+    "forgot_password": "Mot de passe oublié ?",
+    "no_account": "Pas de compte ?",
+    "has_account": "Déjà un compte ?",
+    "login_button": "Se connecter",
+    "register_button": "S'inscrire",
+    "google_login": "Continuer avec Google"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Bienvenue",
+    "xp": "XP",
+    "level": "Niveau",
+    "streak": "Série",
+    "badges": "Badges",
+    "progress": "Progression",
+    "recent_exercises": "Exercices récents",
+    "continue_learning": "Continuer l'apprentissage",
+    "achievements": "Réalisations",
+    "xp_total": "XP Total",
+    "streak_suffix": "jours",
+    "exercises_label": "Exercices",
+    "continue_btn": "Continuer",
+    "start_btn": "Commencer",
+    "soon_label": "Prochainement"
+  },
+  "exercises": {
+    "title": "Modules",
+    "start": "Commencer",
+    "continue": "Continuer",
+    "completed": "Terminé",
+    "part": "Partie",
+    "question": "Question",
+    "submit": "Soumettre",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "score": "Score",
+    "time": "Temps",
+    "subtitle": "{availableCount} modules disponibles · {levelsCount} exercices interactifs · Quiz, puzzles et code",
+    "available_title": "Modules disponibles",
+    "upcoming_title": "Prochainement",
+    "exercises_suffix": "exercices",
+    "in_development": "En développement"
+  },
+  "battle": {
+    "title": "Battle",
+    "find_opponent": "Trouver un adversaire",
+    "waiting": "En attente d'un adversaire...",
+    "your_turn": "Votre tour",
+    "opponent_turn": "Tour de l'adversaire",
+    "you_won": "Vous avez gagné !",
+    "you_lost": "Vous avez perdu",
+    "draw": "Match nul",
+    "play_again": "Jouer encore"
+  },
+  "leaderboard": {
+    "title": "Classement",
+    "rank": "Rang",
+    "player": "Joueur",
+    "xp": "XP",
+    "level": "Niveau",
+    "streak": "Série"
+  },
+  "certification": {
+    "title": "Certifications",
+    "description": "Prouvez vos compétences avec un certificat officiel",
+    "exam_title": "Examen",
+    "questions": "questions",
+    "passing_score": "Score de réussite",
+    "price": "Prix",
+    "start_exam": "Passer l'examen",
+    "already_certified": "Déjà certifié",
+    "exam_passed": "Examen réussi !",
+    "exam_failed": "Examen non réussi",
+    "score": "Score",
+    "get_certificate": "Obtenir le certificat",
+    "my_certifications": "Mes certifications",
+    "verification_code": "Code de vérification",
+    "issued_at": "Émis le",
+    "verify": "Vérifier",
+    "success_desc": "Votre certificat est maintenant disponible dans votre dashboard.",
+    "certified_badge": "✓ Certifié",
+    "how_it_works_title": "Comment ça marche ?",
+    "step_1": "1. Passez l'examen gratuit de 15 questions (1 min/question)",
+    "step_2": "2. Obtenez au moins 67% de bonnes réponses pour réussir",
+    "step_3": "3. Payez pour recevoir votre certificat officiel avec code de vérification",
+    "step_4": "4. Partagez votre certificat avec les recruteurs — vérifiable en ligne",
+    "prev_btn": "Précédent",
+    "next_btn": "Suivant",
+    "finish_btn": "Terminer l'examen",
+    "passed_msg": "Examen réussi !",
+    "failed_msg": "Examen non réussi",
+    "results_detail": "Détail des réponses",
+    "verified_on": "Émis le",
+    "passing_threshold": "67% pour réussir",
+    "info_desc": "Votre certificat inclut un code de vérification unique, partageable avec les recruteurs et employeurs.",
+    "back_to": "Retour aux",
+    "how_it_works_sub": "15 questions — 67% pour réussir"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "overview": "Vue d'ensemble",
+    "users": "Utilisateurs",
+    "analytics": "Analytiques",
+    "bans": "Bannissements",
+    "create_user": "Créer un utilisateur",
+    "total_users": "Total utilisateurs",
+    "active_users": "Utilisateurs actifs",
+    "total_views": "Vues totales",
+    "avg_session": "Durée moyenne",
+    "banned_ips": "IPs bannies",
+    "ban_ip": "Bannir IP",
+    "unban_ip": "Débannir IP",
+    "set_role": "Définir rôle",
+    "delete_user": "Supprimer utilisateur",
+    "create": "Créer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "all": "Tous",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "modules_data": {
+    "frontend": {
+      "name": "Front-End",
+      "description": "HTML, CSS, Bootstrap, Bulma, SCSS, JS DOM — 250 niveaux"
+    },
+    "javascript": {
+      "name": "JavaScript",
+      "description": "Le langage du web moderne et interactif — 102 niveaux"
+    },
+    "python": {
+      "name": "Python",
+      "description": "IA, data science et automatisation — 120 niveaux"
+    },
+    "csharp": {
+      "name": "C# & .NET",
+      "description": "Applications desktop et serveur — 120 niveaux"
+    },
+    "dart": {
+      "name": "Dart & Flutter",
+      "description": "Applications mobiles multiplateformes — 150 niveaux"
+    },
+    "react": {
+      "name": "React",
+      "description": "Interfaces utilisateur modernes et réactives — 120 niveaux"
+    },
+    "nodejs": {
+      "name": "Node.js",
+      "description": "Backend JavaScript et APIs — 120 niveaux"
+    },
+    "cpp": {
+      "name": "C / C++",
+      "description": "Programmation système bas niveau — 120 niveaux"
+    }
+  },
+  "blocs_data": {
+    "fullstack": {
+      "name": "Bloc Fullstack",
+      "description": "Maîtrisez le développement web complet : du front-end au back-end. Construisez les interfaces de Lyoko et les serveurs du supercalculateur.",
+      "sector": "Secteur Web"
+    },
+    "mobile": {
+      "name": "Bloc Mobile",
+      "description": "Développez des applications mobiles pour communiquer avec Lyoko depuis n'importe où. Le lien entre le monde réel et le virtuel.",
+      "sector": "Secteur Mobile"
+    },
+    "desktop": {
+      "name": "Bloc Desktop",
+      "description": "Programmez les logiciels du supercalculateur. Le cœur de la machine qui fait tourner Lyoko et combat XANA directement.",
+      "sector": "Secteur Système"
+    }
+  },
+  "footer": {
+    "slogan": "Le projet ultime de Franz Hopper. Apprenez à coder, sauvez Lyoko, exterminez XANA. <strong class=\"text-lyoko-green\">100% gratuit, sans pub, sans abonnement.</strong>",
+    "support_btn": "Soutenir le projet",
+    "open_source_title": "Projet Open Source",
+    "open_source_desc": "Contribuez au code, proposez des exercices, corrigez des bugs — toute aide est la bienvenue !",
+    "open_source_btn": "Contribuer sur GitHub",
+    "inspired": "PROJET CARTHAGE. Inspiré par Code Lyoko.",
+    "quiztimes": "QuizTimes — Quiz en ligne multijoueur",
+    "made_with_1": "Fait avec",
+    "made_with_2": "pour sauver le monde",
+    "section_missions": "MISSIONS",
+    "section_modules": "MODULES",
+    "section_nav": "NAVIGATION"
+  }
+}

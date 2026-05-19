@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import {
   Eye, EyeOff, Rocket, User, Mail, Lock, UserCircle, ArrowRight, Loader2,
   AlertTriangle, CheckCircle, Sparkles, Code, Shield, Check, X,
@@ -12,6 +13,7 @@ import {
 
 export default function RegisterPage() {
   const { user, register } = useAuth();
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [displayName, setDisplayName] = useState("");
@@ -52,7 +54,7 @@ export default function RegisterPage() {
       setSuccess("Compte créé ! Un email de vérification a été envoyé à " + email.trim() + ". Vérifiez votre boîte de réception (et vos spams) puis cliquez sur le lien de confirmation avant de vous connecter.");
       setLoading(false);
     } else {
-      setError(result.error || "Erreur lors de l'inscription.");
+      setError(result.error || t("common.error"));
       setLoading(false);
     }
   }
@@ -126,7 +128,7 @@ export default function RegisterPage() {
 
           {/* Header */}
           <div className="mb-7">
-            <h1 className="font-display text-2xl font-bold tracking-wide text-white">Cr&eacute;er un compte</h1>
+            <h1 className="font-display text-2xl font-bold tracking-wide text-white">{t("auth.register_title")}</h1>
             <p className="mt-2 text-sm text-white/40">Remplissez les champs ci-dessous pour commencer</p>
           </div>
 
@@ -148,7 +150,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Display Name */}
             <div>
-              <label htmlFor="reg-display" className="mb-2 block text-sm font-medium text-white/60">Nom d&apos;affichage</label>
+              <label htmlFor="reg-display" className="mb-2 block text-sm font-medium text-white/60">{t("auth.display_name")}</label>
               <div className="group relative">
                 <UserCircle size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-green/60" />
                 <input
@@ -166,7 +168,7 @@ export default function RegisterPage() {
             {/* Username + Email side by side */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="reg-user" className="mb-2 block text-sm font-medium text-white/60">Nom d&apos;utilisateur</label>
+                <label htmlFor="reg-user" className="mb-2 block text-sm font-medium text-white/60">{t("auth.username")}</label>
                 <div className="group relative">
                   <User size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-green/60" />
                   <input
@@ -183,7 +185,7 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="reg-email" className="mb-2 block text-sm font-medium text-white/60">Email</label>
+                <label htmlFor="reg-email" className="mb-2 block text-sm font-medium text-white/60">{t("auth.email")}</label>
                 <div className="group relative">
                   <Mail size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-green/60" />
                   <input
@@ -202,7 +204,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="reg-pwd" className="mb-2 block text-sm font-medium text-white/60">Mot de passe</label>
+              <label htmlFor="reg-pwd" className="mb-2 block text-sm font-medium text-white/60">{t("auth.password")}</label>
               <div className="group relative">
                 <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-green/60" />
                 <input
@@ -235,7 +237,7 @@ export default function RegisterPage() {
 
             {/* Confirm */}
             <div>
-              <label htmlFor="reg-confirm" className="mb-2 block text-sm font-medium text-white/60">Confirmer le mot de passe</label>
+              <label htmlFor="reg-confirm" className="mb-2 block text-sm font-medium text-white/60">{t("auth.confirm_password")}</label>
               <div className="group relative">
                 <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-green/60" />
                 <input
@@ -268,7 +270,7 @@ export default function RegisterPage() {
               {loading ? (
                 <Loader2 size={18} className="animate-spin text-dark-bg" />
               ) : (
-                <><Rocket size={16} /> Cr&eacute;er mon compte</>
+                <><Rocket size={16} /> {t("auth.register_button")}</>
               )}
               <div className="animate-shimmer pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent bg-[length:200%_100%]" />
             </button>
@@ -301,14 +303,14 @@ export default function RegisterPage() {
               href="/login"
               className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] text-sm font-medium text-white/60 transition-all hover:border-lyoko-blue/30 hover:bg-lyoko-blue/[0.04] hover:text-lyoko-blue"
             >
-              D&eacute;j&agrave; un compte ? Se connecter <ArrowRight size={14} />
+              {t("auth.has_account")} {t("auth.login_button")} <ArrowRight size={14} />
             </Link>
           </div>
 
           {/* Back */}
           <div className="mt-5 text-center">
             <Link href="/" className="text-xs text-white/50 transition-colors hover:text-lyoko-blue">
-              &larr; Retour &agrave; l&apos;accueil
+              &larr; {t("common.back")}
             </Link>
           </div>
         </div>

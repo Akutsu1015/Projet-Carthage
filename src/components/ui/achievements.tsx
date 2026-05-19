@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import {
     Award, Lock, Star, Flame, Zap, Brain, Trophy, Compass,
     Target, Gem, Crown, Rocket, Shield, Sparkles, Heart,
@@ -183,9 +184,34 @@ const MODULE_LEVEL_MAP: Record<string, number> = {
     dart: 150, react: 120, nodejs: 120, cpp: 120,
 };
 
+function translateAchievement(id: string, defaultTitle: string, defaultDesc: string, lang: 'fr' | 'en') {
+    if (lang === 'fr') return { title: defaultTitle, description: defaultDesc };
+    
+    const englishMap: Record<string, { title: string; description: string }> = {
+        first_step: { title: "First Step", description: "Complete your first exercise" },
+        brain_connected: { title: "Brain Connected", description: "Complete 50 exercises" },
+        diamond: { title: "Diamond", description: "Complete 100 exercises" },
+        warrior: { title: "Lyoko Warrior", description: "Complete 250 exercises" },
+        legend: { title: "Living Legend", description: "Complete 500 exercises" },
+        explorer: { title: "Explorer", description: "Try 3 different modules" },
+        polyglot: { title: "Polyglot", description: "Try 5 different modules" },
+        master_fullstack: { title: "Fullstack Master", description: "Try all web modules" },
+        carthage_heir: { title: "Heir of Carthage", description: "50+ exercises in a single module" },
+        completionist: { title: "Completionist", description: "Complete a module at 100%" },
+        flame_spark: { title: "Rising Flame", description: "3-day streak" },
+        fire_walker: { title: "Fire Walker", description: "7-day streak" },
+        inferno: { title: "Inferno", description: "30-day streak" },
+        electric_shock: { title: "Electric Shock", description: "Reach 500 XP" },
+        champion: { title: "Lyoko Champion", description: "Reach level 10" },
+    };
+    
+    return englishMap[id] || { title: defaultTitle, description: defaultDesc };
+}
+
 /* ═══ COMPONENT ═══ */
 export function Achievements() {
     const { user } = useAuth();
+    const { lang } = useTranslation();
     const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
     const [showAll, setShowAll] = useState(false);
 
@@ -233,13 +259,19 @@ export function Achievements() {
     // Group by category
     const categories = ["progression", "exploration", "devotion"] as const;
 
+    const categoryLabels: Record<string, { label: string; color: string }> = {
+        progression: { label: lang === "fr" ? "Progression" : "Progression", color: "#00d4ff" },
+        exploration: { label: lang === "fr" ? "Exploration" : "Exploration", color: "#00ff88" },
+        devotion: { label: lang === "fr" ? "Dévotion" : "Devotion", color: "#fbbf24" },
+    };
+
     return (
         <div className="mb-8 rounded-2xl border border-carthage-gold/15 bg-gradient-to-br from-carthage-gold/[0.04] to-transparent">
             {/* Header */}
             <div className="flex items-center gap-3 border-b border-carthage-gold/15 px-5 py-3">
                 <Award size={16} className="text-carthage-gold" />
                 <span className="font-display text-sm font-bold text-carthage-gold">
-                    Trophées
+                    {lang === "fr" ? "Trophées" : "Achievements"}
                 </span>
                 <span className="ml-auto rounded-full border border-carthage-gold/30 bg-carthage-gold/10 px-2.5 py-0.5 text-[0.65rem] font-bold text-carthage-gold">
                     {unlockedCount}/{ACHIEVEMENTS.length}
@@ -252,7 +284,7 @@ export function Achievements() {
                     <div className="space-y-5">
                         {categories.map((cat) => {
                             const items = ACHIEVEMENTS.filter((a) => a.category === cat);
-                            const cfg = CATEGORY_LABELS[cat];
+                            const cfg = categoryLabels[cat];
                             return (
                                 <div key={cat}>
                                     <h4
@@ -293,7 +325,9 @@ export function Achievements() {
                         onClick={() => setShowAll(!showAll)}
                         className="mt-4 w-full text-center text-xs font-medium text-carthage-gold/60 transition-colors hover:text-carthage-gold"
                     >
-                        {showAll ? "Voir moins" : `Voir tous les trophées (${ACHIEVEMENTS.length})`}
+                        {showAll
+                            ? (lang === "fr" ? "Voir moins" : "Show less")
+                            : (lang === "fr" ? `Voir tous les trophées (${ACHIEVEMENTS.length})` : `Show all achievements (${ACHIEVEMENTS.length})`)}
                     </button>
                 )}
             </div>
@@ -309,6 +343,8 @@ function AchievementCard({
     achievement: AchievementDef;
     isUnlocked: boolean;
 }) {
+    const { lang } = useTranslation();
+    const { title, description } = translateAchievement(achievement.id, achievement.title, achievement.description, lang);
     const Icon = isUnlocked ? achievement.icon : Lock;
 
     return (
@@ -340,10 +376,10 @@ function AchievementCard({
             </div>
 
             <span className="text-[0.7rem] font-semibold leading-tight text-white">
-                {achievement.title}
+                {title}
             </span>
             <span className="text-[0.6rem] leading-tight text-white/40">
-                {achievement.description}
+                {description}
             </span>
         </div>
     );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Sparkles, ArrowUp } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 interface LevelUpProps {
     level: number;
@@ -9,6 +10,7 @@ interface LevelUpProps {
 }
 
 export function LevelUpAnimation({ level, onClose }: LevelUpProps) {
+    const { lang } = useTranslation();
     const [phase, setPhase] = useState<"enter" | "show" | "exit">("enter");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -111,11 +113,11 @@ export function LevelUpAnimation({ level, onClose }: LevelUpProps) {
                 </div>
 
                 <h2 className="font-display text-3xl font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-                    Niveau {level} atteint !
+                    {lang === "fr" ? `Niveau ${level} atteint !` : `Level ${level} reached!`}
                 </h2>
 
                 <p className="mt-2 text-sm text-white/50">
-                    Continuez votre progression, guerrier de Lyoko
+                    {lang === "fr" ? "Continuez votre progression, guerrier de Lyoko" : "Continue your progress, Lyoko warrior"}
                 </p>
             </div>
         </div>

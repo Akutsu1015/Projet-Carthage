@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import { Trophy, Flame, BookOpen, Star, Clock, X, TrendingUp } from "lucide-react";
 
 interface SessionData {
@@ -41,6 +42,7 @@ function clearSession() {
 
 export function SessionSummary() {
     const { user } = useAuth();
+    const { lang } = useTranslation();
     const [session, setSession] = useState<SessionData | null>(null);
     const [visible, setVisible] = useState(false);
 
@@ -76,10 +78,10 @@ export function SessionSummary() {
     const xpGained = user.xp - session.startXp;
 
     const stats = [
-        { icon: BookOpen, label: "Exercices", value: exDone.toString(), color: "#00ff88" },
-        { icon: Star, label: "XP gagnés", value: `+${xpGained}`, color: "#fbbf24" },
-        { icon: Clock, label: "Durée", value: `${minutes}min`, color: "#00d4ff" },
-        { icon: Flame, label: "Streak", value: `${user.streak}j`, color: "#ff2244" },
+        { icon: BookOpen, label: lang === "fr" ? "Exercices" : "Exercises", value: exDone.toString(), color: "#00ff88" },
+        { icon: Star, label: lang === "fr" ? "XP gagnés" : "XP gained", value: `+${xpGained}`, color: "#fbbf24" },
+        { icon: Clock, label: lang === "fr" ? "Durée" : "Duration", value: `${minutes} min`, color: "#00d4ff" },
+        { icon: Flame, label: "Streak", value: `${user.streak}${lang === "fr" ? "j" : "d"}`, color: "#ff2244" },
     ];
 
     return (
@@ -99,7 +101,7 @@ export function SessionSummary() {
                         <TrendingUp size={24} className="text-lyoko-blue" />
                     </div>
                     <h3 className="font-display text-lg font-bold text-white">
-                        Résumé de Session
+                        {lang === "fr" ? "Résumé de Session" : "Session Summary"}
                     </h3>
                     <p className="text-xs text-white/40">{session.moduleName}</p>
                 </div>
@@ -122,16 +124,16 @@ export function SessionSummary() {
                 <div className="border-t border-white/5 px-6 py-4 text-center">
                     <p className="text-sm text-white/50">
                         {exDone >= 10
-                            ? "🏆 Performance exceptionnelle !"
+                            ? (lang === "fr" ? "🏆 Performance exceptionnelle !" : "🏆 Exceptional performance!")
                             : exDone >= 5
-                                ? "💪 Belle session, continuez !"
-                                : "✨ Bon début, revenez bientôt !"}
+                                ? (lang === "fr" ? "💪 Belle session, continuez !" : "💪 Great session, keep it up!")
+                                : (lang === "fr" ? "✨ Bon début, revenez bientôt !" : "✨ Good start, come back soon!")}
                     </p>
                     <button
                         onClick={handleClose}
                         className="mt-3 rounded-lg bg-lyoko-blue px-6 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]"
                     >
-                        Continuer
+                        {lang === "fr" ? "Continuer" : "Continue"}
                     </button>
                 </div>
             </div>

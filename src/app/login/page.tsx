@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/translation-context";
 import {
   Eye, EyeOff, LogIn, Mail, Lock, ArrowRight, Loader2,
   CheckCircle, AlertTriangle, Sparkles, BookOpen, Trophy,
@@ -20,6 +21,7 @@ export default function LoginPage() {
 
 function LoginContent() {
   const { user, login } = useAuth();
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -48,7 +50,7 @@ function LoginContent() {
     if (result.success) {
       router.push("/dashboard");
     } else {
-      setError(result.error || "Email ou mot de passe incorrect.");
+      setError(result.error || t("auth.error"));
       setLoading(false);
     }
   }
@@ -113,7 +115,7 @@ function LoginContent() {
 
           {/* Header */}
           <div className="mb-8">
-            <h1 className="font-display text-2xl font-bold tracking-wide text-white">Connexion</h1>
+            <h1 className="font-display text-2xl font-bold tracking-wide text-white">{t("auth.login_title")}</h1>
             <p className="mt-2 text-sm text-white/40">Entrez vos identifiants pour acc&eacute;der &agrave; votre espace</p>
           </div>
 
@@ -136,7 +138,7 @@ function LoginContent() {
             {/* Email */}
             <div>
               <label htmlFor="login-email" className="mb-2 block text-sm font-medium text-white/60">
-                Email ou nom d&apos;utilisateur
+                {t("auth.email")}
               </label>
               <div className="group relative">
                 <Mail size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-blue/60" />
@@ -156,7 +158,7 @@ function LoginContent() {
             {/* Password */}
             <div>
               <label htmlFor="login-password" className="mb-2 block text-sm font-medium text-white/60">
-                Mot de passe
+                {t("auth.password")}
               </label>
               <div className="group relative">
                 <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/20 transition-colors group-focus-within:text-lyoko-blue/60" />
@@ -190,7 +192,7 @@ function LoginContent() {
               {loading ? (
                 <Loader2 size={18} className="animate-spin" />
               ) : (
-                <>Se connecter <ArrowRight size={16} /></>
+                <>{t("auth.login_button")} <ArrowRight size={16} /></>
               )}
               <div className="animate-shimmer pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent bg-[length:200%_100%]" />
             </button>
@@ -214,7 +216,7 @@ function LoginContent() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.77-.01-.54z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Continuer avec Google
+            {t("auth.google_login")}
           </a>
 
           {/* Spacer + Register link */}
@@ -223,14 +225,14 @@ function LoginContent() {
               href="/register"
               className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-lyoko-green/30 text-sm font-medium text-lyoko-green transition-all hover:border-lyoko-green/50 hover:bg-lyoko-green/10"
             >
-              Cr&eacute;er un compte <ArrowRight size={14} />
+              {t("auth.register_button")} <ArrowRight size={14} />
             </Link>
           </div>
 
           {/* Back */}
           <div className="mt-6 text-center">
             <Link href="/" className="text-xs text-white/50 transition-colors hover:text-lyoko-blue">
-              &larr; Retour &agrave; l&apos;accueil
+              &larr; {t("common.back")}
             </Link>
           </div>
         </div>

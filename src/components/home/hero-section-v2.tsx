@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
   ArrowRight, Zap, Star, Shield, Swords, ChevronDown,
 } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 const PILLS = [
   { label: "HTML / CSS", color: "#ff6644" },
@@ -12,23 +13,7 @@ const PILLS = [
   { label: "Python", color: "#00d4ff" },
   { label: "React", color: "#61dafb" },
   { label: "Node.js", color: "#00ff88" },
-  { label: "+ 4 langages", color: "#a855f7" },
-];
-
-const FLOATING_ACHIEVEMENTS = [
-  { icon: Zap, label: "+120 XP", sub: "Exercice complété", color: "#fbbf24", delay: 0 },
-  { icon: Star, label: "Niveau 12", sub: "Développeur Lyoko", color: "#a855f7", delay: 0.8 },
-];
-
-const CODE_LINES = [
-  { content: "function", type: "keyword" },
-  { content: " resistance", type: "fn" },
-  { content: "() {", type: "punct" },
-  { content: null, indent: 1, text: "// Mission : vaincre XANA", type: "comment" },
-  { content: null, indent: 1, text: 'const arme = "JavaScript";', type: "text" },
-  { content: null, indent: 1, text: "const xp = 1100;", type: "text" },
-  { content: null, indent: 1, text: "return vaincre(arme, xp);", type: "text" },
-  { content: "}", type: "punct" },
+  { label: "+ 4 langages", color: "#a855f7", isDynamic: true },
 ];
 
 type CodeColor = {
@@ -48,6 +33,13 @@ const C: CodeColor = {
 };
 
 export function HeroSectionV2() {
+  const { t } = useTranslation();
+
+  const FLOATING_ACHIEVEMENTS = [
+    { icon: Zap, label: "+120 XP", sub: t("home.achievement_completed"), color: "#fbbf24", delay: 0 },
+    { icon: Star, label: t("home.achievement_level_title"), sub: t("home.achievement_level"), color: "#a855f7", delay: 0.8 },
+  ];
+
   return (
     <section className="relative overflow-hidden pt-10 pb-16 md:pt-16 md:pb-24">
       {/* Background */}
@@ -78,7 +70,7 @@ export function HeroSectionV2() {
             >
               <span className="h-1.5 w-1.5 rounded-full bg-lyoko-green animate-pulse" />
               <span className="font-display text-[0.65rem] font-bold tracking-widest text-lyoko-blue uppercase">
-                100&nbsp;% Gratuit · Sans pub · Open source
+                {t("home.trust_badge")}
               </span>
             </motion.div>
 
@@ -89,12 +81,12 @@ export function HeroSectionV2() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="mb-6 font-display text-[clamp(2.2rem,5.5vw,4rem)] font-extrabold leading-[1.1] text-white"
             >
-              Apprenez à coder.{" "}
+              {t("home.hero_title_part1")}{" "}
               <span
                 className="bg-gradient-to-r from-lyoko-blue via-lyoko-green to-lyoko-blue bg-clip-text text-transparent"
                 style={{ backgroundSize: "200% auto", animation: "gradient-shift 4s linear infinite" }}
               >
-                Sauvez Lyoko.
+                {t("home.hero_title_part2")}
               </span>
             </motion.h1>
 
@@ -104,10 +96,8 @@ export function HeroSectionV2() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mb-8 max-w-lg text-base leading-relaxed text-white/60 md:text-lg"
-            >
-              La plateforme de formation en ligne avec <strong className="text-white/90">1&nbsp;100+ exercices interactifs</strong>,
-              un assistant IA et des battles en temps réel. Rejoignez le Projet Carthage.
-            </motion.p>
+              dangerouslySetInnerHTML={{ __html: t("home.hero_description") }}
+            />
 
             {/* Language pills */}
             <motion.div
@@ -126,7 +116,7 @@ export function HeroSectionV2() {
                     color: p.color,
                   }}
                 >
-                  {p.label}
+                  {p.isDynamic ? t("home.pills_more") : p.label}
                 </span>
               ))}
             </motion.div>
@@ -143,13 +133,13 @@ export function HeroSectionV2() {
                 className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-lyoko-blue to-[#009ab8] px-7 py-3.5 font-display text-sm font-bold text-white shadow-[0_4px_24px_rgba(0,212,255,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(0,212,255,0.5)]"
               >
                 <Zap size={16} className="transition-transform group-hover:scale-110" />
-                Commencer gratuitement
+                {t("home.cta_start_free")}
               </Link>
               <Link
                 href="/exercises"
                 className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-7 py-3.5 font-display text-sm font-bold text-white/80 backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-white/20 hover:text-white"
               >
-                Voir les formations
+                {t("home.cta_view_courses")}
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
@@ -163,15 +153,15 @@ export function HeroSectionV2() {
             >
               <span className="flex items-center gap-1.5">
                 <Shield size={12} className="text-lyoko-green" />
-                Aucune carte de crédit
+                {t("home.proof_no_card")}
               </span>
               <span className="flex items-center gap-1.5">
                 <Swords size={12} className="text-xana-red" />
-                Battle Code en ligne
+                {t("home.proof_battle")}
               </span>
               <span className="flex items-center gap-1.5">
                 <Star size={12} className="text-carthage-gold" />
-                Système XP &amp; badges
+                {t("home.proof_gamified")}
               </span>
             </motion.div>
           </div>
@@ -210,7 +200,7 @@ export function HeroSectionV2() {
                       <span style={{ color: C.punct }}>() {"{"}</span>
                     </div>
                     <div className="pl-5">
-                      <span style={{ color: C.comment }}>// Mission : vaincre XANA</span>
+                      <span style={{ color: C.comment }}>{t("home.ide_comment")}</span>
                     </div>
                     <div className="pl-5">
                       <span style={{ color: C.keyword }}>const</span>
@@ -253,7 +243,7 @@ export function HeroSectionV2() {
                 <span className="font-mono text-[0.65rem] text-lyoko-blue/60">JavaScript • UTF-8</span>
                 <span className="flex items-center gap-1.5 font-mono text-[0.65rem] text-lyoko-green/70">
                   <span className="h-1.5 w-1.5 rounded-full bg-lyoko-green" />
-                  Exercice en cours
+                  {t("home.ide_status")}
                 </span>
               </div>
             </div>
@@ -299,7 +289,7 @@ export function HeroSectionV2() {
           className="mt-16 hidden justify-center md:flex"
         >
           <div className="flex animate-bounce flex-col items-center gap-1 text-white/20">
-            <span className="text-[0.65rem] font-display tracking-widest uppercase">Découvrir</span>
+            <span className="text-[0.65rem] font-display tracking-widest uppercase">{t("home.scroll_discover")}</span>
             <ChevronDown size={16} />
           </div>
         </motion.div>

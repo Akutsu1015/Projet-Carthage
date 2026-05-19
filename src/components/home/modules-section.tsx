@@ -4,6 +4,7 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { motion } from "framer-motion";
 import { useVideoTransition } from "@/components/video-transition";
 import { MODULES } from "@/lib/constants";
+import { useTranslation } from "@/lib/translation-context";
 import {
   GraduationCap, Palette, Braces, Terminal, Monitor,
   Smartphone, Atom, Server, Cpu, Play, Lock, Gamepad2,
@@ -15,6 +16,7 @@ const ICON_MAP: Record<string, any> = {
 
 export function ModulesSection() {
   const { playTransition } = useVideoTransition();
+  const { t } = useTranslation();
 
   return (
     <section id="courses" className="relative overflow-hidden py-24">
@@ -25,10 +27,10 @@ export function ModulesSection() {
         <ScrollReveal>
           <h2 className="mb-2 text-center font-display text-[clamp(1.5rem,4vw,2.5rem)] font-extrabold">
             <GraduationCap className="mb-1 mr-2 inline-block text-carthage-gold" size={28} />
-            Tous les <span className="text-carthage-gold">Modules</span>
+            {t("home.modules_heading")} <span className="text-carthage-gold">{t("home.modules_heading_gold")}</span>
           </h2>
           <p className="mb-14 text-center text-sm text-white/50">
-            Chaque module est une arme contre XANA
+            {t("home.modules_subtitle")}
           </p>
         </ScrollReveal>
 
@@ -74,21 +76,23 @@ export function ModulesSection() {
                     <Icon size={24} />
                   </div>
                   <h3 className="relative mb-1 font-display text-sm font-semibold text-white">
-                    {mod.name}
+                    {t("modules_data." + mod.id + ".name")}
                   </h3>
-                  <p className="relative mb-4 flex-1 text-xs leading-relaxed text-white/45">{mod.description}</p>
+                  <p className="relative mb-4 flex-1 text-xs leading-relaxed text-white/45">
+                    {t("modules_data." + mod.id + ".description")}
+                  </p>
                   {mod.available ? (
                     <span
                       className="relative flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all duration-300 group-hover:brightness-110"
                       style={{ background: `${mod.color}18`, color: mod.color, border: `1px solid ${mod.color}20` }}
                     >
                       <Play size={12} />
-                      Commencer
+                      {t("home.modules_btn_start")}
                     </span>
                   ) : (
                     <span className="relative flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.06] py-2.5 text-xs font-medium text-white/30">
                       <Lock size={12} />
-                      Bientôt
+                      {t("home.modules_btn_soon")}
                     </span>
                   )}
                 </motion.article>

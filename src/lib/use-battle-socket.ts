@@ -160,18 +160,9 @@ export function useBattleSocket(sessionToken?: string | null) {
 
   const joinQueue = useCallback((mode: string, difficulty: string) => {
     const socket = socketRef.current;
+    console.log("[BattleSocket] joinQueue called, socket connected:", socket?.connected);
     if (!socket?.connected) {
-      console.warn("[BattleSocket] Cannot join queue: not connected, retrying in 500ms...");
-      // Retry after a short delay to allow socket to connect
-      setTimeout(() => {
-        const retrySocket = socketRef.current;
-        if (retrySocket?.connected) {
-          retrySocket.emit("queue-join", { mode, difficulty });
-          console.log("[BattleSocket] Queue join retried successfully");
-        } else {
-          console.error("[BattleSocket] Still not connected after retry");
-        }
-      }, 500);
+      console.warn("[BattleSocket] Cannot join queue: not connected");
       return;
     }
     socket.emit("queue-join", { mode, difficulty });

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { TrendingUp } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 const STORAGE_KEY = "activity_log_v1";
 
@@ -20,13 +21,14 @@ function getLast30Days(): string[] {
     return days;
 }
 
-function formatDateShort(dateStr: string) {
+function formatDateShort(dateStr: string, lang: string) {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+    return d.toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", { day: "numeric", month: "short" });
 }
 
 /* ═══ COMPONENT ═══ */
 export function ProgressChart() {
+    const { lang, t } = useTranslation();
     const [log, setLog] = useState<Record<string, number>>({});
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const svgRef = useRef<SVGSVGElement>(null);
@@ -103,16 +105,19 @@ export function ProgressChart() {
                 <div className="flex items-center gap-2">
                     <TrendingUp size={16} className="text-lyoko-blue" />
                     <span className="font-display text-sm font-bold text-white">
-                        Progression
+                        {t("dashboard.progress")}
                     </span>
-                    <span className="text-xs text-white/40">30 derniers jours</span>
+                    <span className="text-xs text-white/40">
+                        {lang === "fr" ? "30 derniers jours" : "Last 30 days"}
+                    </span>
                 </div>
                 <div className="flex gap-4 text-right text-xs text-white/40">
                     <span>
-                        <span className="font-bold text-white">{totalPeriod}</span> exercices
+                        <span className="font-bold text-white">{totalPeriod}</span>{" "}
+                        {lang === "fr" ? (totalPeriod !== 1 ? "exercices" : "exercice") : (totalPeriod !== 1 ? "exercises" : "exercise")}
                     </span>
                     <span>
-                        <span className="font-bold text-white">{avgPerDay}</span> /jour
+                        <span className="font-bold text-white">{avgPerDay}</span> {lang === "fr" ? "/jour" : "/day"}
                     </span>
                 </div>
             </div>
@@ -176,7 +181,7 @@ export function ProgressChart() {
                                 fontSize="9"
                                 fontFamily="var(--font-mono)"
                             >
-                                {formatDateShort(dateStr)}
+                                {formatDateShort(dateStr, lang)}
                             </text>
                         );
                     })}
@@ -240,7 +245,7 @@ export function ProgressChart() {
                                             fontWeight="bold"
                                             fontFamily="var(--font-mono)"
                                         >
-                                            {v} ex · {formatDateShort(days[i])}
+                                            {v} ex · {formatDateShort(days[i], lang)}
                                         </text>
                                     </g>
                                 </>

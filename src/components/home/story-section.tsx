@@ -3,39 +3,36 @@
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/translation-context";
 import { BookOpen, UserCog, Globe, Skull } from "lucide-react";
 
 const STORY_CARDS = [
   {
     image: "/images/hero/franz_hopper_136.jpg",
-    alt: "Franz Hopper, créateur du supercalculateur et de Lyoko",
     icon: UserCog,
-    title: "Franz Hopper",
-    text: 'Scientifique de génie, Franz Hopper a créé le <strong class="text-lyoko-blue">supercalculateur</strong> et le monde virtuel <strong class="text-lyoko-green">Lyoko</strong>. Son projet ultime\u00a0: <em>Carthage</em>, un programme capable de contrer toute menace numérique.',
+    key: "hopper",
     color: "#00d4ff",
     step: "01",
   },
   {
     image: "/images/hero/franz_hopper_372.jpg",
-    alt: "Le monde virtuel Lyoko composé de secteurs numériques",
     icon: Globe,
-    title: "Le Monde de Lyoko",
-    text: "Lyoko est un univers virtuel composé de secteurs numériques. C'est là que se joue la bataille contre XANA. Chaque ligne de code que vous écrivez renforce les défenses de ce monde.",
+    key: "lyoko",
     color: "#00ff88",
     step: "02",
   },
   {
     image: "/images/hero/franz_hopper_374.jpg",
-    alt: "XANA, l'intelligence artificielle malveillante",
     icon: Skull,
-    title: "La Menace XANA",
-    text: '<strong class="text-xana-red">XANA</strong> est une intelligence artificielle malveillante qui cherche à détruire Lyoko et envahir le monde réel. Seule la maîtrise complète du code peut l\'arrêter.',
+    key: "xana",
     color: "#ff2244",
     step: "03",
   },
 ];
 
 export function StorySection() {
+  const { t } = useTranslation();
+
   return (
     <section id="story" className="relative overflow-hidden py-24">
       {/* Background accent */}
@@ -45,11 +42,11 @@ export function StorySection() {
         <ScrollReveal>
           <h2 className="mb-2 text-center font-display text-[clamp(1.5rem,4vw,2.5rem)] font-extrabold">
             <BookOpen className="mb-1 mr-2 inline-block text-lyoko-blue" size={28} />
-            L&apos;Histoire du{" "}
-            <span className="text-lyoko-blue">Projet Carthage</span>
+            {t("home.story_heading")}{" "}
+            <span className="text-lyoko-blue">{t("home.story_heading_blue")}</span>
           </h2>
           <p className="mb-14 text-center text-sm text-white/50">
-            Le projet ultime de Franz Hopper pour sauver l&apos;humanité
+            {t("home.story_subtitle")}
           </p>
         </ScrollReveal>
 
@@ -58,7 +55,7 @@ export function StorySection() {
 
         <div className="grid gap-8 md:grid-cols-3">
           {STORY_CARDS.map((card, i) => (
-            <ScrollReveal key={card.title} delay={i * 0.15}>
+            <ScrollReveal key={card.key} delay={i * 0.15}>
               <motion.article
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
@@ -80,7 +77,7 @@ export function StorySection() {
                 <div className="relative h-[220px] overflow-hidden md:h-[250px]">
                   <Image
                     src={card.image}
-                    alt={card.alt}
+                    alt={t("home.story." + card.key + ".alt")}
                     width={400}
                     height={250}
                     className="h-full w-full object-cover saturate-[0.85] transition-all duration-500 group-hover:scale-105 group-hover:saturate-100"
@@ -106,11 +103,11 @@ export function StorySection() {
                     style={{ color: card.color }}
                   >
                     <card.icon size={18} />
-                    {card.title}
+                    {t("home.story." + card.key + ".title")}
                   </h3>
                   <p
                     className="text-sm leading-relaxed text-white/55"
-                    dangerouslySetInnerHTML={{ __html: card.text }}
+                    dangerouslySetInnerHTML={{ __html: t("home.story." + card.key + ".text") }}
                   />
                 </div>
 
