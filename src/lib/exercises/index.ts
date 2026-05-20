@@ -5,7 +5,7 @@
  * The exercise engine reads from getExercises().
  */
 
-import type { Exercise } from "@/app/exercises/[module]/exercise-client";
+import type { Exercise } from "@/app/[locale]/exercises/[module]/exercise-client";
 
 const registry: Record<string, Exercise[]> = {};
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, X, Pencil } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 interface Props {
   initial: string;
@@ -14,6 +15,7 @@ interface Props {
  * 280 chars max, debounced char counter, ESC cancels.
  */
 export function BioEditor({ initial, onSaved }: Props) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(initial || "");
   const [saving, setSaving] = useState(false);
@@ -45,7 +47,7 @@ export function BioEditor({ initial, onSaved }: Props) {
     return (
       <div className="group flex items-start gap-2">
         <p className="flex-1 text-sm text-white/70">
-          {value || <span className="italic text-white/30">Aucune bio. Cliquez pour en ajouter une.</span>}
+          {value || <span className="italic text-white/30">{t("settings_components.bio_empty")}</span>}
         </p>
         <button
           type="button"
@@ -70,7 +72,7 @@ export function BioEditor({ initial, onSaved }: Props) {
         }}
         rows={3}
         autoFocus
-        placeholder="Une courte présentation (280 caractères max)…"
+        placeholder={t("settings_components.bio_placeholder")}
         className="w-full resize-y rounded-lg border border-white/10 bg-dark-bg p-3 text-sm text-white placeholder:text-white/30 focus:border-lyoko-blue/40 focus:outline-none"
       />
       <div className="flex items-center justify-between">
@@ -82,7 +84,7 @@ export function BioEditor({ initial, onSaved }: Props) {
             disabled={saving}
             className="flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 hover:bg-white/5"
           >
-            <X size={13} /> Annuler
+            <X size={13} /> {t("settings_components.cancel")}
           </button>
           <button
             type="button"
@@ -90,7 +92,7 @@ export function BioEditor({ initial, onSaved }: Props) {
             disabled={saving}
             className="flex items-center gap-1 rounded-lg bg-lyoko-blue/20 px-3 py-1.5 text-xs font-semibold text-lyoko-blue hover:bg-lyoko-blue/30 disabled:opacity-50"
           >
-            <Check size={13} /> {saving ? "Enregistrement…" : "Enregistrer"}
+            <Check size={13} /> {saving ? t("settings_components.saving") : t("settings_components.save")}
           </button>
         </div>
       </div>

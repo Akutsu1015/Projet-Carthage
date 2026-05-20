@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter, usePathname } from '@/i18n/routing';
 import fr from '@/messages/fr.json';
 import en from '@/messages/en.json';
 
@@ -16,19 +17,27 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-export function TranslationProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('fr');
+export function TranslationProvider({ children, initialLang = 'fr' }: { children: ReactNode; initialLang?: Lang }) {
+  const [lang, setLangState] = useState<Lang>(initialLang);
+  const router = useRouter();
+  const pathname = usePathname();
 
+  // On mount, we can still sync from localStorage if it differs from initialLang?
+  // Actually, next-intl middleware will use Accept-Language or cookie, so initialLang is already correct.
+  // We can just keep localStorage as a backup.
   useEffect(() => {
     const stored = localStorage.getItem('site-lang') as Lang | null;
-    if (stored === 'fr' || stored === 'en') {
-      setLangState(stored);
+    if (stored && stored !== lang) {
+      // If user has a stored preference different from the URL locale, we might want to redirect them, 
+      // but to avoid redirect loops on first load, we'll just let next-intl middleware handle cookies.
     }
-  }, []);
+  }, [lang]);
 
   const setLang = (newLang: Lang) => {
     setLangState(newLang);
     localStorage.setItem('site-lang', newLang);
+    // document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`; // optional, next-intl uses NEXT_LOCALE by default
+    router.replace(pathname, { locale: newLang });
   };
 
   const t = (key: string): string => {

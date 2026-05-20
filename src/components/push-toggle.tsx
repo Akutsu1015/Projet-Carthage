@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 /** Convert URL-safe base64 (VAPID) → Uint8Array for PushManager.subscribe. */
 function urlBase64ToUint8Array(base64: string): Uint8Array {
@@ -18,6 +19,7 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
  * (no VAPID keys) or unsupported by the browser.
  */
 export function PushToggle() {
+  const { t } = useTranslation();
   const [supported, setSupported] = useState(false);
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -88,12 +90,12 @@ export function PushToggle() {
       className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50 ${
         enabled
           ? "border-lyoko-green/30 bg-lyoko-green/10 text-lyoko-green hover:bg-lyoko-green/20"
-          : "border-white/10 text-white/60 hover:bg-white/5 hover:text-white"
+          : "border-white/20 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
       }`}
-      title={enabled ? "Désactiver les notifications" : "Activer les notifications"}
+      title={enabled ? t("settings_components.disable_title") : t("settings_components.enable_title")}
     >
       {enabled ? <Bell size={14} /> : <BellOff size={14} />}
-      {enabled ? "Notifications ON" : "Activer les notifications"}
+      {enabled ? t("settings_components.notif_on") : t("settings_components.enable_title")}
     </button>
   );
 }

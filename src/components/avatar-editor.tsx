@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 const COLORS = [
   "#00d4ff", // lyoko-blue (Aelita)
@@ -26,6 +27,7 @@ interface Props {
  * Lyoko palette. Persists to /api/db/user updateAvatar.
  */
 export function AvatarEditor({ initialValue, initialColor, displayName, onSaved }: Props) {
+  const { t } = useTranslation();
   const defaultInitials = displayName.replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase() || "??";
   const [value, setValue] = useState(initialValue || defaultInitials);
   const [color, setColor] = useState(initialColor || COLORS[0]);
@@ -64,7 +66,7 @@ export function AvatarEditor({ initialValue, initialColor, displayName, onSaved 
         </div>
 
         <div className="flex-1 space-y-2">
-          <label className="block text-xs uppercase tracking-wide text-white/40">Initiales (1-3 lettres)</label>
+          <label className="block text-xs uppercase tracking-wide text-white/40">{t("settings_components.initials_label")}</label>
           <input
             type="text"
             value={value}
@@ -76,7 +78,7 @@ export function AvatarEditor({ initialValue, initialColor, displayName, onSaved 
       </div>
 
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-wide text-white/40">Couleur</label>
+        <label className="mb-2 block text-xs uppercase tracking-wide text-white/40">{t("settings_components.color_label")}</label>
         <div className="flex flex-wrap gap-2">
           {COLORS.map((c) => (
             <button
@@ -87,7 +89,7 @@ export function AvatarEditor({ initialValue, initialColor, displayName, onSaved 
                 c === color ? "border-white" : "border-white/20"
               }`}
               style={{ background: c }}
-              aria-label={`Couleur ${c}`}
+              aria-label={t("settings_components.color_aria").replace("%{color}", c)}
             >
               {c === color && <Check size={14} className="absolute inset-0 m-auto text-dark-bg" />}
             </button>
@@ -101,7 +103,7 @@ export function AvatarEditor({ initialValue, initialColor, displayName, onSaved 
         disabled={saving}
         className="flex items-center gap-2 rounded-lg bg-lyoko-blue/20 px-4 py-2 text-sm font-semibold text-lyoko-blue hover:bg-lyoko-blue/30 disabled:opacity-50"
       >
-        {saved ? (<><Check size={14} /> Enregistré</>) : (saving ? "Enregistrement…" : "Enregistrer")}
+        {saved ? (<><Check size={14} /> {t("settings_components.saved")}</>) : (saving ? t("settings_components.saving") : t("settings_components.save"))}
       </button>
     </div>
   );

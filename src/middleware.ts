@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
+
+const intlMiddleware = createMiddleware(routing);
 
 // ─── Inline rate limiter (Edge-compatible, in-memory per instance) ───
 
@@ -97,7 +101,7 @@ function getBucket(pathname: string, method: string): { bucket: string; cfg: RLC
 
 // ─── Middleware ───
 
-export function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Skip static assets
@@ -121,47 +125,51 @@ export function middleware(req: NextRequest) {
   }
 
   // Only apply bot detection + rate limiting on API routes
-  if (!pathname.startsWith("/api/")) return NextResponse.next();
+  if (pathname.startsWith("/api/")) {
+    // 2. Bot detection
+    const isGoodBot = GOOD_BOTS.some(p => p.test(ua));
+    if (!isGoodBot) {
+      if (BAD_BOTS.some(p => p.test(ua)) || !ua || ua.length < 10) {
+        markSuspicious(ip);
+        return new NextResponse(
+          JSON.stringify({ error: "Requête non autorisée." }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    }
 
-  // 2. Bot detection
-  const isGoodBot = GOOD_BOTS.some(p => p.test(ua));
-  if (!isGoodBot) {
-    if (BAD_BOTS.some(p => p.test(ua)) || !ua || ua.length < 10) {
+    // 3. Rate limiting
+    const { bucket, cfg } = getBucket(pathname, req.method);
+    const rl = rateLimit(ip, bucket, cfg);
+
+    if (!rl.ok) {
+      console.warn(`[RL_BLOCK] ${ip} blocked on ${bucket}`);
       markSuspicious(ip);
       return new NextResponse(
-        JSON.stringify({ error: "Requête non autorisée." }),
-        { status: 403, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Trop de requêtes. Réessayez dans quelques secondes.", debug_ip: ip }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": String(rl.retryAfter),
+            "X-RateLimit-Limit": String(cfg.max),
+            "X-RateLimit-Remaining": "0",
+          },
+        }
       );
     }
+
+    const res = NextResponse.next();
+    res.headers.set("X-RateLimit-Limit", String(cfg.max));
+    res.headers.set("X-RateLimit-Remaining", String(rl.remaining));
+    return res;
   }
 
-  // 3. Rate limiting
-  const { bucket, cfg } = getBucket(pathname, req.method);
-  const rl = rateLimit(ip, bucket, cfg);
-
-  if (!rl.ok) {
-    console.warn(`[RL_BLOCK] ${ip} blocked on ${bucket}`);
-    markSuspicious(ip);
-    return new NextResponse(
-      JSON.stringify({ error: "Trop de requêtes. Réessayez dans quelques secondes.", debug_ip: ip }),
-      {
-        status: 429,
-        headers: {
-          "Content-Type": "application/json",
-          "Retry-After": String(rl.retryAfter),
-          "X-RateLimit-Limit": String(cfg.max),
-          "X-RateLimit-Remaining": "0",
-        },
-      }
-    );
-  }
-
-  const res = NextResponse.next();
-  res.headers.set("X-RateLimit-Limit", String(cfg.max));
-  res.headers.set("X-RateLimit-Remaining", String(rl.remaining));
-  return res;
+  // 4. Delegate to next-intl for all non-API paths
+  return intlMiddleware(req);
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|images|models|videos|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
+
