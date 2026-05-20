@@ -50,7 +50,7 @@ export function PushToggle() {
       if (perm !== "granted") return;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
+        applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource,
       });
       await fetch("/api/db/push", {
         method: "POST",
