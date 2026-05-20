@@ -26,10 +26,19 @@ export function GlobalSearch() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keyboard shortcut: Cmd+K or Ctrl+K
+  // Keyboard shortcut: Cmd+K or Ctrl+K — but yield to Monaco editor and form
+  // inputs, where Ctrl+K is a heavy chord prefix (delete line, comment, etc.).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        const t = e.target as HTMLElement | null;
+        const inEditor = t && (
+          t.closest?.(".monaco-editor") ||
+          t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.isContentEditable
+        );
+        if (inEditor) return; // let the editor handle its own Ctrl+K
         e.preventDefault();
         setOpen((o) => !o);
       } else if (e.key === "Escape" && open) {

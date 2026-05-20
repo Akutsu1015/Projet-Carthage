@@ -553,9 +553,16 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
       const tag = (e.target as HTMLElement).tagName;
       const isTextarea = tag === "TEXTAREA";
       const isInput = tag === "INPUT";
+      // Monaco editor renders as a contenteditable div, NOT a textarea/input.
+      // Without this guard, typing letters n/p/f/s inside Monaco would trigger
+      // global shortcuts (next exercise / previous / zen mode / skip) instead
+      // of inserting the character — breaking any code containing those keys.
+      const target = e.target as HTMLElement | null;
+      const inMonaco = target?.closest?.(".monaco-editor") != null;
+      const inEditable = target?.isContentEditable === true;
 
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") return;
-      if (isTextarea || isInput) return;
+      if (isTextarea || isInput || inMonaco || inEditable) return;
 
       if (e.key === "ArrowRight" || e.key === "n") { e.preventDefault(); goNext(); }
       if (e.key === "ArrowLeft" || e.key === "p") { e.preventDefault(); goPrev(); }
