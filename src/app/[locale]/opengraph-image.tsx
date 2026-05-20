@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// Edge runtime is incompatible with generateImageMetadata + generateStaticParams
+// (which Next.js adds implicitly because of the [locale] segment).
+export const runtime = "nodejs";
 // Static fallback; the per-locale alt is set in generateImageMetadata below.
 export const alt = "PROJET CARTHAGE – Learn to code in the universe of Code Lyoko";
 export const size = { width: 1200, height: 630 };
