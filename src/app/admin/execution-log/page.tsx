@@ -29,7 +29,7 @@ interface Stats {
 }
 
 export default function ExecutionLogPage() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -39,8 +39,8 @@ export default function ExecutionLogPage() {
   const limit = 100;
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) router.replace("/");
-  }, [loading, user, router]);
+    if (!isLoading && (!user || user.role !== "admin")) router.replace("/");
+  }, [isLoading, user, router]);
 
   const load = useCallback(async () => {
     const qs = new URLSearchParams({ limit: String(limit), offset: String(offset) });
@@ -56,7 +56,7 @@ export default function ExecutionLogPage() {
 
   useEffect(() => { if (user?.role === "admin") load(); }, [user, load]);
 
-  if (loading) return <div className="p-8 text-white/40">Chargement...</div>;
+  if (isLoading) return <div className="p-8 text-white/40">Chargement...</div>;
   if (!user || user.role !== "admin") return null;
 
   return (

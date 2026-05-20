@@ -39,13 +39,13 @@ function parseFlags(json: string | null): string[] {
 }
 
 export default function SuspiciousBattlesPage() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) router.replace("/");
-  }, [loading, user, router]);
+    if (!isLoading && (!user || user.role !== "admin")) router.replace("/");
+  }, [isLoading, user, router]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/db/admin/suspicious-battles");
@@ -55,7 +55,7 @@ export default function SuspiciousBattlesPage() {
 
   useEffect(() => { if (user?.role === "admin") load(); }, [user, load]);
 
-  if (loading) return <div className="p-8 text-white/40">Chargement...</div>;
+  if (isLoading) return <div className="p-8 text-white/40">Chargement...</div>;
   if (!user || user.role !== "admin") return null;
 
   return (

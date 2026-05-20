@@ -10,19 +10,19 @@ import { PushToggle } from "@/components/push-toggle";
 import { ArrowLeft, User, Bell, FileText, Shield, Smile } from "lucide-react";
 
 export default function SettingsPage() {
-  const { user, loading, refreshUser } = useAuth();
+  const { user, isLoading, refreshUser } = useAuth();
   const router = useRouter();
   const [savedBio, setSavedBio] = useState<string>("");
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/login");
-  }, [loading, user, router]);
+    if (!isLoading && !user) router.replace("/login");
+  }, [isLoading, user, router]);
 
   useEffect(() => {
     if (user) setSavedBio((user as any).bio || "");
   }, [user]);
 
-  if (loading) return <div className="p-8 text-white/40">Chargement…</div>;
+  if (isLoading) return <div className="p-8 text-white/40">Chargement…</div>;
   if (!user) return null;
 
   return (
