@@ -1,9 +1,25 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "PROJET CARTHAGE – Apprenez à coder dans l'univers de Code Lyoko";
+// Static fallback; the per-locale alt is set in generateImageMetadata below.
+export const alt = "PROJET CARTHAGE – Learn to code in the universe of Code Lyoko";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+export async function generateImageMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isEn = locale === "en";
+  return [
+    {
+      id: "og",
+      alt: isEn
+        ? "PROJET CARTHAGE – Learn to code in the universe of Code Lyoko"
+        : "PROJET CARTHAGE – Apprenez à coder dans l'univers de Code Lyoko",
+      size,
+      contentType,
+    },
+  ];
+}
 
 export default async function Image() {
   return new ImageResponse(
