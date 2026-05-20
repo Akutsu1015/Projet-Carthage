@@ -9,9 +9,36 @@ const { Server } = require("socket.io");
 const Database = require("better-sqlite3");
 const path = require("path");
 const crypto = require("crypto");
+let webpush = null;
+try { webpush = require("web-push"); } catch (_) { /* optional */ }
 
 const PORT = process.env.BATTLE_PORT || 3002;
 const DB_PATH = path.join(__dirname, "data", "carthage.db");
+
+// ═══ Optional Web Push (notify offline opponents when matched) ═══
+const VAPID_PUB = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+const VAPID_PRIV = process.env.VAPID_PRIVATE_KEY || "";
+const VAPID_SUB = process.env.VAPID_SUBJECT || "mailto:noreply@gamematcher.fr";
+const pushReady = !!(webpush && VAPID_PUB && VAPID_PRIV);
+if (pushReady) {
+  webpush.setVapidDetails(VAPID_SUB, VAPID_PUB, VAPID_PRIV);
+  console.log("[push] enabled");
+}
+
+async function sendPushToUser(userId, payload) {
+  if (!pushReady) return;
+  try {
+    const row = getDb().prepare("SELECT push_subscription FROM users WHERE id = ?").get(userId);
+    if (!row || !row.push_subscription) return;
+    const sub = JSON.parse(row.push_subscription);
+    await webpush.sendNotification(sub, JSON.stringify(payload));
+  } catch (e) {
+    const code = e && e.statusCode;
+    if (code === 404 || code === 410) {
+      try { getDb().prepare("UPDATE users SET push_subscription = NULL WHERE id = ?").run(userId); } catch (_) {}
+    }
+  }
+}
 
 // ═══ Database connection ═══
 let db;
@@ -177,6 +204,19 @@ function tryMatch(mode, difficulty) {
   p1.socket.emit("match-found", matchData);
   p2.socket.emit("match-found", matchData);
 
+  // Push notification (best-effort, only fires if the user enabled it).
+  const url = `/battle/${battleId}`;
+  void sendPushToUser(p1.user.id, {
+    title: "Battle trouvée !",
+    body: `Adversaire : ${p2.user.display_name} (${difficulty})`,
+    url, tag: `battle-${battleId}`,
+  });
+  void sendPushToUser(p2.user.id, {
+    title: "Battle trouvée !",
+    body: `Adversaire : ${p1.user.display_name} (${difficulty})`,
+    url, tag: `battle-${battleId}`,
+  });
+
   console.log(`[MATCH] ${mode}/${difficulty}: ${p1.user.display_name} vs ${p2.user.display_name} → battle ${battleId}`);
 }
 
@@ -230,6 +270,35 @@ io.on("connection", (socket) => {
     const roomId = `battle:${battleId}`;
     socket.join(roomId);
     socket.emit("battle-joined", { battleId });
+  });
+
+  // ─── Spectator: join a battle room as a viewer (read-only) ───
+  // Non-participants get their own room name so they receive `code-update`
+  // broadcasts but no `opponent-*` events that would confuse the client.
+  socket.on("spectator-join", ({ battleId }) => {
+    const roomId = `battle:${battleId}:spec`;
+    socket.join(roomId);
+    const count = (io.sockets.adapter.rooms.get(roomId) || new Set()).size;
+    io.to(`battle:${battleId}`).emit("spectator-count", { count });
+    socket.emit("spectator-joined", { battleId });
+  });
+
+  socket.on("spectator-leave", ({ battleId }) => {
+    const roomId = `battle:${battleId}:spec`;
+    socket.leave(roomId);
+    const count = (io.sockets.adapter.rooms.get(roomId) || new Set()).size;
+    io.to(`battle:${battleId}`).emit("spectator-count", { count });
+  });
+
+  // ─── Players opt-in to broadcast their code to spectators ───
+  // The participant client throttles this (e.g. every 1s).
+  socket.on("code-update", ({ battleId, code }) => {
+    if (typeof code !== "string" || code.length > 50_000) return;
+    io.to(`battle:${battleId}:spec`).emit("code-update", {
+      userId: user.id,
+      displayName: user.display_name,
+      code,
+    });
   });
 
   // ─── Submit solution in battle (relay only, no DB writes) ───

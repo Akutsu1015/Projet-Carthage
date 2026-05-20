@@ -388,6 +388,14 @@ html.light select:focus {
   95% { opacity: 0.8; transform: translateX(2px); }
 }
 
+@keyframes carthage-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: carthage-slide-in-right 0.3s ease-out;
+}
+
 @keyframes shimmer {
   to { background-position: -200% 0; }
 }

@@ -1,0 +1,36 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────
+# Self-hosted Piston code execution engine
+# (replaces the public emkc.org API, whitelist-only since 2026-02-15)
+#
+# Usage:
+#   docker compose -f docker-compose.piston.yml up -d
+#   ./scripts/piston-install-runtimes.sh   (or .ps1 on Windows)
+#
+# Then set PISTON_URL=http://localhost:2000/api/v2 in .env.local
+# (or leave unset — that is now the default in src/app/api/db/execute/route.ts).
+# ─────────────────────────────────────────────────────────────
+
+services:
+  piston:
+    image: ghcr.io/engineer-man/piston:latest
+    container_name: carthage-piston
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "2000:2000"
+    volumes:
+      - piston-packages:/piston/packages
+    tmpfs:
+      - /tmp:exec
+    environment:
+      PISTON_LOG_LEVEL: INFO
+      PISTON_BIND_ADDRESS: 0.0.0.0:2000
+      PISTON_RUN_TIMEOUT: 10000
+      PISTON_COMPILE_TIMEOUT: 10000
+      PISTON_OUTPUT_MAX_SIZE: 1048576
+      PISTON_MAX_PROCESS_COUNT: 64
+
+volumes:
+  piston-packages:

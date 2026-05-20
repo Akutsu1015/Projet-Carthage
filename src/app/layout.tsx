@@ -7,6 +7,9 @@ import { VideoTransitionProvider } from "@/components/video-transition";
 import { SoundProvider } from "@/lib/sound-manager";
 import { ThemeProvider } from "next-themes";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { ServiceWorkerRegister } from "@/components/sw-register";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
+import { PushToaster } from "@/components/push-toaster";
 import { TranslationProvider } from "@/lib/translation-context";
 import { SITE } from "@/lib/constants";
 import "./globals.css";
@@ -161,6 +164,9 @@ export default function RootLayout({
           <TranslationProvider>
             <AuthProvider>
               <AnalyticsTracker />
+              <ServiceWorkerRegister />
+              <KeyboardShortcuts />
+              <PushToaster />
               <SoundProvider>
                 <VideoTransitionProvider>
                   <Navbar />

@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
         console.warn(`[ANTI-CHEAT] User ${user.id} (${user.display_name}) flagged in battle ${battleId}: ${acFlags.flags?.join(", ")} | tabs=${acFlags.tabSwitches} pastes=${acFlags.largePastes} devtools=${acFlags.devToolsOpened} speed=${acFlags.suspiciousSpeed}`);
       }
 
-      const battle = submitBattleSolution(battleId, user.id, code, timeMs);
+      const battle = submitBattleSolution(battleId, user.id, code, timeMs, acFlags || null);
       if (!battle) return NextResponse.json({ success: false, error: "Impossible de soumettre" }, { status: 400 });
       return NextResponse.json({ success: true, battle, flagged: !!acFlags?.flagged });
     }

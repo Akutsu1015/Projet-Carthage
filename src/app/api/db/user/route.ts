@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getSessionUser, updateUserXp, updateUserStreak, updateUserAvatar,
+  getSessionUser, updateUserXp, updateUserStreak, updateUserAvatar, updateUserBio,
   addBadge, getUserBadges, getFullUserData,
 } from "@/lib/db";
 import { getTokenFromRequest } from "@/lib/api-auth";
@@ -43,6 +43,14 @@ export async function POST(req: NextRequest) {
     if (action === "updateAvatar") {
       const { type, value, color } = body;
       updateUserAvatar(dbUser.id, type, value, color || "#00d4ff");
+      const userData = getFullUserData(dbUser.id);
+      return NextResponse.json({ success: true, user: userData });
+    }
+
+    // ── UPDATE BIO ──
+    if (action === "updateBio") {
+      const bio = typeof body.bio === "string" ? body.bio : "";
+      updateUserBio(dbUser.id, bio);
       const userData = getFullUserData(dbUser.id);
       return NextResponse.json({ success: true, user: userData });
     }

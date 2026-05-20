@@ -20,8 +20,8 @@ export function flexNormalize(s: string): string {
     .replace(/\s+([!?.,;:)\]}>])/g, "$1")    // remove space BEFORE punctuation
     .replace(/([(\[{<])\s+/g, "$1")          // remove space AFTER opening brackets
     .replace(/\s+([)\]}>])/g, "$1")          // remove space BEFORE closing brackets
-    .replace(/[''`]/g, "'")                   // normalize single quotes
-    .replace(/[""]/g, '"')                    // normalize double quotes
+    .replace(/[‘’‚‛`]/g, "'")    // normalize single & smart quotes + backtick
+    .replace(/[“”„‟«»]/g, '"')   // normalize smart double quotes + guillemets
     .toLowerCase();
 }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Check, X, Puzzle, RotateCcw, Sparkles, Zap, Lightbulb } from "lucide-react";
 import { useSound } from "@/lib/sound-manager";
+import { useTranslation } from "@/lib/translation-context";
 import { triggerParticleBurst } from "./magic-effects";
 
 interface PuzzleExercise {
@@ -29,6 +30,7 @@ export function PuzzleViewEnhanced({
   isCompleted,
   onWrong,
 }: PuzzleViewEnhancedProps) {
+  const { t } = useTranslation();
   const [source, setSource] = useState<{ text: string; origIdx: number; id: number }[]>([]);
   const [target, setTarget] = useState<{ text: string; origIdx: number; id: number }[]>([]);
   const [result, setResult] = useState<"none" | "success" | "error">("none");
@@ -220,8 +222,8 @@ export function PuzzleViewEnhanced({
       {/* Source zone - available pieces */}
       <div className="mb-2 flex items-center gap-2">
         <Puzzle size={14} className="text-lyoko-purple" />
-        <span className="text-xs text-white/40">Cliquez pour placer :</span>
-        <span className="text-xs text-white/20">({source.length} restants)</span>
+        <span className="text-xs text-white/40">{t("exercises.puzzle_click_place")}</span>
+        <span className="text-xs text-white/20">({source.length} {t("exercises.puzzle_remaining")})</span>
       </div>
 
       <div
@@ -236,7 +238,7 @@ export function PuzzleViewEnhanced({
       >
         {source.length === 0 && (
           <span className="w-full text-center text-xs text-white/20 py-4 italic">
-            Tous les blocs ont été placés ✨
+            {t("exercises.puzzle_all_placed")}
           </span>
         )}
         {source.map((piece, idx) => (
@@ -268,8 +270,8 @@ export function PuzzleViewEnhanced({
       {/* Target zone - user's answer */}
       <div className="mb-2 flex items-center gap-2">
         <Zap size={14} className="text-lyoko-blue" />
-        <span className="text-xs text-white/40">Votre réponse (cliquez pour retirer) :</span>
-        <span className="text-xs text-white/20">({target.length} placés)</span>
+        <span className="text-xs text-white/40">{t("exercises.puzzle_your_answer")}</span>
+        <span className="text-xs text-white/20">({target.length} {t("exercises.puzzle_placed_count")})</span>
       </div>
 
       <div
@@ -305,7 +307,7 @@ export function PuzzleViewEnhanced({
         {target.length === 0 && (
           <div className="w-full flex flex-col items-center justify-center py-6 text-white/20">
             <Puzzle size={24} className="mb-2 opacity-30" />
-            <span className="text-xs italic">Cliquez sur les blocs ci-dessus pour les placer ici</span>
+            <span className="text-xs italic">{t("exercises.puzzle_prompt")}</span>
           </div>
         )}
         {target.map((piece, idx) => (
@@ -328,7 +330,7 @@ export function PuzzleViewEnhanced({
               <Check size={24} className="text-lyoko-green" />
             </div>
           </div>
-          <p className="text-lyoko-green font-bold text-lg">Puzzle résolu ! 🎉</p>
+          <p className="text-lyoko-green font-bold text-lg">{t("exercises.puzzle_solved")}</p>
           <p className="text-lyoko-green/70 text-sm">+25 XP</p>
         </div>
       )}
@@ -340,7 +342,7 @@ export function PuzzleViewEnhanced({
               <X size={24} className="text-xana-red" />
             </div>
           </div>
-          <p className="text-xana-red font-bold text-center">L&apos;ordre n&apos;est pas correct...</p>
+          <p className="text-xana-red font-bold text-center">{t("exercises.puzzle_incorrect")}</p>
           {exercise.hint && (
             <p className="text-white/50 text-sm text-center mt-2">💡 {exercise.hint}</p>
           )}
@@ -354,7 +356,7 @@ export function PuzzleViewEnhanced({
           className="flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm text-white/60 transition-all hover:bg-white/5 hover:border-white/20 sm:py-2.5 sm:hover:-translate-y-0.5"
         >
           <RotateCcw size={16} />
-          Réinitialiser
+          {t("exercises.reset")}
         </button>
         <button
           onClick={handleValidate}
@@ -365,7 +367,7 @@ export function PuzzleViewEnhanced({
           }}
         >
           <Check size={18} />
-          Valider
+          {t("exercises.submit")}
         </button>
       </div>
 

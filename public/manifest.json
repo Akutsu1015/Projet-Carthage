@@ -3,19 +3,39 @@
   "short_name": "Carthage",
   "description": "Plateforme de formation au code immersive inspirée de Code Lyoko",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#050a18",
   "theme_color": "#00d4ff",
+  "lang": "fr",
+  "categories": ["education", "productivity", "games"],
   "icons": [
+    { "src": "/favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "/images/carthage_logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/images/carthage_logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
     {
-      "src": "/favicon.png",
-      "sizes": "64x64",
-      "type": "image/png"
+      "name": "Exercices",
+      "short_name": "Exercices",
+      "description": "Reprendre vos exercices",
+      "url": "/exercises",
+      "icons": [{ "src": "/favicon.png", "sizes": "64x64" }]
     },
     {
-      "src": "/images/carthage_logo.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "name": "Battle",
+      "short_name": "Battle",
+      "description": "Affronter d'autres codeurs",
+      "url": "/battle",
+      "icons": [{ "src": "/favicon.png", "sizes": "64x64" }]
+    },
+    {
+      "name": "Défi du jour",
+      "short_name": "Défi",
+      "description": "Voir le défi quotidien",
+      "url": "/daily",
+      "icons": [{ "src": "/favicon.png", "sizes": "64x64" }]
     }
   ]
 }

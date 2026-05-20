@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Check, Lock, BookOpen, CircleDot, Puzzle, Code, Star, Sparkles } from "lucide-react";
 import { triggerRipple } from "./magic-effects";
+import { useTranslation } from "@/lib/translation-context";
 
 interface ExerciseCardProps {
   id: string;
@@ -58,6 +59,7 @@ export function ExerciseCardEnhanced({
   color = "#00d4ff",
   index,
 }: ExerciseCardProps) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [showSparkle, setShowSparkle] = useState(false);
@@ -244,14 +246,14 @@ export function ExerciseCardEnhanced({
         {isCompleted && (
           <div className="flex items-center gap-1">
             <Star size={12} className="text-lyoko-green fill-lyoko-green" />
-            <span className="text-xs text-lyoko-green font-medium">Fait</span>
+            <span className="text-xs text-lyoko-green font-medium">{t("exercises.completed")}</span>
           </div>
         )}
 
         {/* Locked overlay */}
         {isLocked && (
           <div className="absolute inset-0 flex items-center justify-center bg-dark-surface/50 backdrop-blur-[1px] rounded-xl">
-            <span className="text-xs text-white/30">Verrouillé</span>
+            <span className="text-xs text-white/30">{t("exercises.locked")}</span>
           </div>
         )}
       </div>

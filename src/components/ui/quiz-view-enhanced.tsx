@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { safeHtml } from "@/lib/sanitize";
 import { Check, X, Clock, Zap, Sparkles, Trophy } from "lucide-react";
 import { useSound } from "@/lib/sound-manager";
+import { useTranslation } from "@/lib/translation-context";
 import { triggerParticleBurst } from "./magic-effects";
 
 interface QuizExercise {
@@ -43,6 +45,7 @@ export function QuizViewEnhanced({
   const [shakeOption, setShakeOption] = useState<number | null>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const { play } = useSound();
+  const { t, lang } = useTranslation();
 
   // Reset on exercise change
   useEffect(() => {
@@ -200,8 +203,8 @@ export function QuizViewEnhanced({
       {/* Instruction */}
       {exercise.instruction && (
         <div className="mb-4 rounded-xl border border-carthage-gold/20 bg-carthage-gold/5 px-4 py-3 text-sm text-white/80">
-          <span className="text-carthage-gold font-semibold">Question: </span>
-          <span dangerouslySetInnerHTML={{ __html: exercise.instruction }} />
+          <span className="text-carthage-gold font-semibold">{t("exercises.question")}: </span>
+          <span dangerouslySetInnerHTML={safeHtml(exercise.instruction)} />
         </div>
       )}
 
@@ -209,7 +212,7 @@ export function QuizViewEnhanced({
       {exercise.content && (
         <div
           className="mb-4 rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-white/70"
-          dangerouslySetInnerHTML={{ __html: exercise.content }}
+          dangerouslySetInnerHTML={safeHtml(exercise.content)}
         />
       )}
 
@@ -311,7 +314,7 @@ export function QuizViewEnhanced({
             }}
           >
             <Trophy size={16} />
-            Bonne réponse ! +25 XP
+            {t("exercises.quiz_correct_xp")}
           </div>
         </div>
       )}
@@ -328,7 +331,7 @@ export function QuizViewEnhanced({
             }}
           >
             <Check size={18} />
-            Valider ma réponse
+            {t("exercises.quiz_validate")}
           </button>
         </div>
       )}
@@ -356,7 +359,7 @@ export function QuizViewEnhanced({
             </div>
             <div className="flex-1">
               <p className={`font-semibold ${isCorrect ? "text-lyoko-green" : "text-xana-red"}`}>
-                {isCorrect ? "Bonne réponse !" : "Mauvaise réponse..."}
+                {isCorrect ? t("exercises.quiz_correct") : t("exercises.quiz_incorrect")}
               </p>
               {exercise.explanation && (
                 <p className="mt-1 text-white/60 text-xs">{exercise.explanation}</p>

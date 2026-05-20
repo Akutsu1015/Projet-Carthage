@@ -1,6 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthUser } from "@/lib/api-auth";
+import { getDb } from "@/lib/db";
 
-const PISTON_URL = "https://emkc.org/api/v2/piston";
+function logExecution(params: {
+  userId: number | null;
+  ip: string;
+  language: string;
+  exitCode: number | null;
+  codeLen: number;
+  durationMs: number;
+  error: string | null;
+}) {
+  try {
+    getDb().prepare(
+      `INSERT INTO execution_log (user_id, ip, language, exit_code, code_len, duration_ms, error)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    ).run(params.userId, params.ip, params.language, params.exitCode, params.codeLen, params.durationMs, params.error);
+  } catch (e) {
+    console.error("[execute] log failed:", e);
+  }
+}
+
+// Public Piston (emkc.org) became whitelist-only on 2026-02-15.
+// Default to a self-hosted instance on localhost:2000 (see docker-compose.piston.yml).
+// Override with PISTON_URL env var to point at any Piston-compatible API.
+const PISTON_URL = process.env.PISTON_URL || "http://localhost:2000/api/v2";
+
+// Per-user / per-IP cooldown (anti-burst, beyond the global IP rate-limit in middleware).
+const COOLDOWN_MS = 2000;
+const DAILY_LIMIT = 300;
+const lastExecAt = new Map<string, number>();
+const dailyCount = new Map<string, { day: string; count: number }>();
+const inFlight = new Set<string>();
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function rateLimitUser(key: string): { ok: true } | { ok: false; status: number; error: string; retryAfter?: number } {
+  const now = Date.now();
+  const last = lastExecAt.get(key);
+  if (last && now - last < COOLDOWN_MS) {
+    return { ok: false, status: 429, error: "Trop rapide, attendez 2 secondes.", retryAfter: Math.ceil((COOLDOWN_MS - (now - last)) / 1000) };
+  }
+  const d = today();
+  const q = dailyCount.get(key);
+  if (q && q.day === d && q.count >= DAILY_LIMIT) {
+    return { ok: false, status: 429, error: `Quota journalier atteint (${DAILY_LIMIT} exécutions). Reviens demain.` };
+  }
+  if (inFlight.has(key)) {
+    return { ok: false, status: 429, error: "Une exécution est déjà en cours." };
+  }
+  return { ok: true };
+}
+
+function recordExec(key: string) {
+  const now = Date.now();
+  lastExecAt.set(key, now);
+  const d = today();
+  const q = dailyCount.get(key);
+  if (!q || q.day !== d) dailyCount.set(key, { day: d, count: 1 });
+  else q.count++;
+}
 
 // Language configs: piston language name + version
 const LANGUAGES: Record<string, { piston: string; version: string; name: string }> = {
@@ -32,17 +93,46 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const user = getAuthUser(req);
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "ip:unknown";
+  const key = user ? `user:${user.id}` : `ip:${ip}`;
+
+  const gate = rateLimitUser(key);
+  if (!gate.ok) {
+    return NextResponse.json(
+      { success: false, error: gate.error },
+      { status: gate.status, headers: gate.retryAfter ? { "Retry-After": String(gate.retryAfter) } : undefined }
+    );
+  }
+
+  inFlight.add(key);
+  const t0 = Date.now();
+  let logLang = "";
+  let logCodeLen = 0;
+  let logExitCode: number | null = null;
+  let logError: string | null = null;
   try {
     const { language, code, stdin } = await req.json();
+    logLang = String(language || "");
+    logCodeLen = typeof code === "string" ? code.length : 0;
 
     if (!language || !code) {
       return NextResponse.json({ success: false, error: "Langue et code requis" }, { status: 400 });
+    }
+
+    if (typeof code === "string" && code.length > 50_000) {
+      return NextResponse.json({ success: false, error: "Code trop long (max 50 000 caractères)." }, { status: 413 });
+    }
+    if (typeof stdin === "string" && stdin.length > 10_000) {
+      return NextResponse.json({ success: false, error: "Stdin trop long (max 10 000 caractères)." }, { status: 413 });
     }
 
     const lang = LANGUAGES[language];
     if (!lang) {
       return NextResponse.json({ success: false, error: `Langue "${language}" non supportée` }, { status: 400 });
     }
+
+    recordExec(key);
 
     // Determine file extension
     const extMap: Record<string, string> = {
@@ -69,6 +159,7 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const text = await res.text();
+      logError = `piston ${res.status}`;
       return NextResponse.json({ success: false, error: `Erreur Piston: ${res.status} ${text}` }, { status: 502 });
     }
 
@@ -79,6 +170,7 @@ export async function POST(req: NextRequest) {
     const compileOutput = data.compile?.output || "";
     const compileStderr = data.compile?.stderr || "";
     const exitCode = data.run?.code ?? -1;
+    logExitCode = exitCode;
 
     return NextResponse.json({
       success: true,
@@ -89,6 +181,18 @@ export async function POST(req: NextRequest) {
       language: lang.name,
     });
   } catch (e: any) {
+    logError = e?.message || "unknown";
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } finally {
+    inFlight.delete(key);
+    logExecution({
+      userId: user?.id ?? null,
+      ip,
+      language: logLang,
+      exitCode: logExitCode,
+      codeLen: logCodeLen,
+      durationMs: Date.now() - t0,
+      error: logError,
+    });
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Trophy, Star, Flame, Crown, X, ChevronRight } from "lucide-react";
+import { useTranslation } from "@/lib/translation-context";
 
 interface MilestonePopupProps {
     milestone: 25 | 50 | 75 | 100;
@@ -70,9 +71,13 @@ function Confetti({ color, delay, x }: { color: string; delay: number; x: number
 const CONFETTI_COLORS = ["#00d4ff", "#00ff88", "#a855f7", "#fbbf24", "#ff2244", "#ffffff"];
 
 export function MilestonePopup({ milestone, moduleName, onClose, onContinue }: MilestonePopupProps) {
+    const { t } = useTranslation();
     const [visible, setVisible] = useState(false);
     const cfg = MILESTONE_CONFIG[milestone];
     const Icon = cfg.icon;
+
+    const title = t(`exercises.milestone_${milestone}_title`);
+    const subtitle = t(`exercises.milestone_${milestone}_subtitle`);
 
     const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
         color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
@@ -142,14 +147,14 @@ export function MilestonePopup({ milestone, moduleName, onClose, onContinue }: M
                         {cfg.emoji} {milestone}%
                     </div>
 
-                    <h2 className="mb-1 font-display text-2xl font-extrabold text-white">{cfg.title}</h2>
+                    <h2 className="mb-1 font-display text-2xl font-extrabold text-white">{title}</h2>
                     <p className="mb-1 text-sm text-white/50">{moduleName}</p>
-                    <p className="mb-6 text-sm text-white/70">{cfg.subtitle}</p>
+                    <p className="mb-6 text-sm text-white/70">{subtitle}</p>
 
                     {/* XP bonus for 100% */}
                     {milestone === 100 && (
                         <div className="mb-4 rounded-xl border border-carthage-gold/20 bg-carthage-gold/10 px-4 py-2 text-sm font-semibold text-carthage-gold">
-                            🎉 Bonus : +250 XP Module Terminé !
+                            {t("exercises.milestone_bonus")}
                         </div>
                     )}
 
@@ -159,13 +164,13 @@ export function MilestonePopup({ milestone, moduleName, onClose, onContinue }: M
                             className="flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-dark-bg transition-all hover:opacity-90 hover:shadow-lg"
                             style={{ background: cfg.color }}
                         >
-                            Continuer <ChevronRight size={16} />
+                            {t("exercises.continue_btn")} <ChevronRight size={16} />
                         </button>
                         <button
                             onClick={onClose}
                             className="text-xs text-white/30 transition-colors hover:text-white/50"
                         >
-                            Fermer
+                            {t("exercises.close_btn")}
                         </button>
                     </div>
                 </div>

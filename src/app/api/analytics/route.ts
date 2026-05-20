@@ -7,7 +7,11 @@ import { getSessionUser } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    // sendBeacon and some clients send empty bodies on tab close — treat as no-op.
+    const raw = await req.text();
+    if (!raw) return NextResponse.json({ success: true });
+    let body: any;
+    try { body = JSON.parse(raw); } catch { return NextResponse.json({ success: false, error: "bad_json" }, { status: 400 }); }
     const { path, sessionId, durationMs } = body;
 
     if (!path || !sessionId) {

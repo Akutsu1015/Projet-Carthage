@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { safeHtml } from "@/lib/sanitize";
 import { useAuth } from "@/lib/auth-context";
 import { useSound } from "@/lib/sound-manager";
 import { XpToastContainer, type XpToastData } from "@/components/ui/xp-toast";
@@ -562,7 +563,7 @@ function IntroView({ ex, onComplete, isCompleted }: { ex: Exercise; onComplete: 
       {ex.content && (
         <div
           className="intro-content mb-5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-[0.92rem] leading-[1.8] text-white/80"
-          dangerouslySetInnerHTML={{ __html: ex.content }}
+          dangerouslySetInnerHTML={safeHtml(ex.content)}
         />
       )}
 
@@ -700,7 +701,7 @@ function QuizView({ ex, onComplete, goNext, isCompleted, onWrong }: { ex: Exerci
 
       {/* Code snippet if present */}
       {ex.content && (
-        <div className="mb-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-sm text-white/70" dangerouslySetInnerHTML={{ __html: ex.content }} />
+        <div className="mb-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-sm text-white/70" dangerouslySetInnerHTML={safeHtml(ex.content)} />
       )}
 
       {/* code_snippet field (used by some quiz exercises) */}
@@ -1383,14 +1384,14 @@ function CodeView({ ex, onComplete, goNext, isCompleted, helpLevel, setHelpLevel
 
       {/* Instruction with left accent border (like old version) */}
       {ex.instruction && (
-        <div className="mb-3 rounded-r-lg border-l-[3px] border-lyoko-green bg-white/[0.02] px-4 py-3 text-sm leading-relaxed text-white/70" dangerouslySetInnerHTML={{ __html: ex.instruction }} />
+        <div className="mb-3 rounded-r-lg border-l-[3px] border-lyoko-green bg-white/[0.02] px-4 py-3 text-sm leading-relaxed text-white/70" dangerouslySetInnerHTML={safeHtml(ex.instruction)} />
       )}
 
       {/* Preview attendu */}
       {ex.preview && (
         <div className="mb-3">
           <h3 className="mb-1.5 text-xs font-medium text-white/40"><Eye size={12} className="mr-1 inline" /> Aperçu attendu :</h3>
-          <div className="rounded-lg bg-white p-3 text-sm text-gray-800" dangerouslySetInnerHTML={{ __html: ex.preview }} />
+          <div className="rounded-lg bg-white p-3 text-sm text-gray-800" dangerouslySetInnerHTML={safeHtml(ex.preview)} />
         </div>
       )}
 

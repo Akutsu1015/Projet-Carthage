@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Zap, Calendar, ArrowRight, Check } from "lucide-react";
+import { Zap, Calendar, ArrowRight, Check, Flame } from "lucide-react";
 import { MODULES } from "@/lib/constants";
 import { useTranslation } from "@/lib/translation-context";
 import Link from "next/link";
@@ -27,14 +27,29 @@ function getDailyExercise() {
 export function DailyChallenge() {
     const { lang } = useTranslation();
     const [completed, setCompleted] = useState(false);
-    const { mod, exIndex } = getDailyExercise();
+    const [streak, setStreak] = useState(0);
+    const [serverMod, setServerMod] = useState<string | null>(null);
+    const fallback = getDailyExercise();
+    const mod = serverMod ? (MODULES.find((m) => m.id === serverMod) ?? fallback.mod) : fallback.mod;
+    const exIndex = fallback.exIndex;
     const todayKey = getTodayKey();
     const storageKey = `daily_challenge_${todayKey}`;
 
+    // Sync state with the server (works cross-device); fall back to localStorage offline.
     useEffect(() => {
-        try {
-            setCompleted(localStorage.getItem(storageKey) === "done");
-        } catch { /* ignore */ }
+        let cancelled = false;
+        fetch("/api/db/daily")
+            .then((r) => r.ok ? r.json() : null)
+            .then((d) => {
+                if (cancelled || !d?.success) return;
+                setCompleted(!!d.completed);
+                setStreak(d.streak || 0);
+                if (d.challenge?.module_id) setServerMod(d.challenge.module_id);
+            })
+            .catch(() => {
+                try { setCompleted(localStorage.getItem(storageKey) === "done"); } catch { /* ignore */ }
+            });
+        return () => { cancelled = true; };
     }, [storageKey]);
 
     return (
@@ -44,8 +59,13 @@ export function DailyChallenge() {
                 <span className="font-display text-sm font-bold text-carthage-gold">
                     {lang === "fr" ? "Défi du Jour" : "Daily Challenge"}
                 </span>
+                {streak > 0 && (
+                    <span className="rounded-full bg-xana-red/15 px-2 py-0.5 text-[0.65rem] font-bold text-xana-red">
+                        <Flame size={10} className="mr-1 inline" />{streak}
+                    </span>
+                )}
                 <span className="ml-auto rounded-full border border-carthage-gold/30 bg-carthage-gold/10 px-2.5 py-0.5 text-[0.65rem] font-bold text-carthage-gold">
-                    ×2 XP
+                    +50 XP
                 </span>
             </div>
 
@@ -81,6 +101,9 @@ export function DailyChallenge() {
                         href={mod.href}
                         onClick={() => {
                             try { localStorage.setItem(storageKey, "done"); } catch { /* ignore */ }
+                            // Optimistic UI; the actual server-side completion
+                            // is triggered when the user solves the exercise
+                            // (POST /api/db/daily from the exercise client).
                             setCompleted(true);
                         }}
                         className="flex flex-shrink-0 items-center gap-1.5 rounded-xl border border-carthage-gold/40 bg-carthage-gold/10 px-4 py-2 text-xs font-semibold text-carthage-gold transition-all hover:bg-carthage-gold/20 hover:shadow-[0_0_16px_rgba(251,191,36,0.2)]"

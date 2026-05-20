@@ -1,66 +1,28 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { safeHtml } from "@/lib/sanitize";
 import { useAuth } from "@/lib/auth-context";
 import { useSound } from "@/lib/sound-manager";
+import { useTranslation } from "@/lib/translation-context";
 import { XpToastContainer, type XpToastData } from "@/components/ui/xp-toast-enhanced";
 import { MilestonePopup } from "@/components/ui/milestone-popup";
 import { ParticleCanvas, FloatingTextContainer, RippleContainer, ConfettiRainCanvas, triggerConfettiRain } from "@/components/ui/magic-effects";
 import { ExerciseCardEnhanced, CategoryHeader } from "@/components/ui/exercise-card-enhanced";
 import { QuizViewEnhanced } from "@/components/ui/quiz-view-enhanced";
 import { PuzzleViewEnhanced } from "@/components/ui/puzzle-view-enhanced";
+import { CodeEditor } from "@/components/ui/code-editor";
 import { TransitionWrapper, CelebrationOverlay } from "@/components/ui/page-transitions";
 import { logActivityToday } from "@/components/ui/activity-heatmap";
 import { startSession } from "@/components/ui/session-summary";
 import { getExercises } from "@/lib/exercises/registry";
 
-// Import all exercise modules
-import "@/lib/exercises/frontend-part1";
-import "@/lib/exercises/frontend-part2";
-import "@/lib/exercises/frontend-part3";
-import "@/lib/exercises/frontend-part4";
-import "@/lib/exercises/frontend-part5";
-import "@/lib/exercises/javascript-part1";
-import "@/lib/exercises/javascript-part2";
-import "@/lib/exercises/javascript-part3";
-import "@/lib/exercises/javascript-part4";
-import "@/lib/exercises/python-part1";
-import "@/lib/exercises/python-part2";
-import "@/lib/exercises/python-part3";
-import "@/lib/exercises/python-part4";
-import "@/lib/exercises/python-part5";
-import "@/lib/exercises/dart-part1";
-import "@/lib/exercises/dart-part2";
-import "@/lib/exercises/dart-part3";
-import "@/lib/exercises/dart-part4";
-import "@/lib/exercises/dart-part5";
-import "@/lib/exercises/react-part1";
-import "@/lib/exercises/react-part2";
-import "@/lib/exercises/react-part3";
-import "@/lib/exercises/react-part4";
-import "@/lib/exercises/react-part5";
-import "@/lib/exercises/nodejs-part1";
-import "@/lib/exercises/nodejs-part2";
-import "@/lib/exercises/nodejs-part3";
-import "@/lib/exercises/nodejs-part4";
-import "@/lib/exercises/nodejs-part5";
-import "@/lib/exercises/cpp-part1";
-import "@/lib/exercises/cpp-part2";
-import "@/lib/exercises/cpp-part3";
-import "@/lib/exercises/cpp-part4";
-import "@/lib/exercises/cpp-part5";
-import "@/lib/exercises/cpp-part6";
-import "@/lib/exercises/csharp-part1";
-import "@/lib/exercises/csharp-part2";
-import "@/lib/exercises/csharp-part3";
-import "@/lib/exercises/csharp-part4";
-import "@/lib/exercises/csharp-part5";
-import "@/lib/exercises/csharp-part6";
+import { loadModule } from "@/lib/exercises/loader";
 
 import {
   ChevronLeft, ChevronRight, Search, BookOpen, Code, Puzzle, CircleDot,
-  Play, RotateCcw, Lock, Monitor, Smartphone, TerminalSquare, Eye, EyeOff,
-  RefreshCw, Sun, Moon, RotateCw, SkipForward, Home, Shrink, Expand,
+  Play, RotateCcw, Lock, Monitor, TerminalSquare, Eye, EyeOff,
+  RefreshCw, Sun, Moon, SkipForward, Home, Shrink, Expand,
   Flame, Zap, Trophy, Star, Check, Lightbulb, Sparkles, Menu, X as XIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -70,8 +32,17 @@ import { validateCode } from "@/lib/exercises/validate-code";
 
 /* ═══ MODULE CATEGORIES ═══ */
 const VISUAL_MODULES = ["frontend", "javascript", "react"];
-const MOBILE_MODULES = ["dart"];
-const TERMINAL_MODULES = ["nodejs", "python", "cpp", "csharp"];
+const TERMINAL_MODULES = ["nodejs", "python", "cpp", "csharp", "dart", "c"];
+
+// Module → Piston language key (matches /api/db/execute LANGUAGES table)
+const EXEC_LANGUAGE: Record<string, string> = {
+  nodejs: "javascript",
+  python: "python",
+  cpp: "cpp",
+  csharp: "csharp",
+  dart: "dart",
+  c: "c",
+};
 
 /* ═══ PREVIEW HELPERS ═══ */
 
@@ -121,80 +92,6 @@ try { ${code} } catch(e) { const d = document.createElement('div'); d.style.colo
   return "";
 }
 
-function buildMobilePreview(code: string): string {
-  const hasAppBar = code.includes("AppBar");
-  const hasButton = code.includes("ElevatedButton") || code.includes("TextButton") || code.includes("FloatingActionButton");
-  const hasListView = code.includes("ListView");
-  const hasImage = code.includes("Image.");
-  const hasScaffold = code.includes("Scaffold");
-  const hasMaterial = code.includes("MaterialApp") || code.includes("runApp");
-  const textMatches = [...code.matchAll(/Text\(\s*['"]([^'"]*)['"]/g)].map(m => m[1]);
-  const titleMatch = code.match(/title:\s*Text\(\s*['"]([^'"]*)['"]/);
-  const appTitle = titleMatch ? titleMatch[1] : "Flutter App";
-  const isFlutterUI = hasAppBar || hasButton || hasListView || hasImage || hasScaffold || hasMaterial || textMatches.length > 0;
-  if (!isFlutterUI) {
-    const prints = [...code.matchAll(/print\(\s*['"]([^'"]*)['"]\s*\)/g)].map(m => m[1]);
-    const interpPrints = [...code.matchAll(/print\(\s*'([^']*)'\s*\)/g)].map(m => m[1]);
-    const allPrints = prints.length > 0 ? prints : interpPrints;
-    const consoleLinesHTML = allPrints.length > 0
-      ? allPrints.map(p => `<div class="log">${p.replace(/\$/g, '<span class="var">$</span>')}</div>`).join("")
-      : `<div class="empty">En attente d'exécution...</div>`;
-    return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0f;color:#fff;min-height:100vh;display:flex;flex-direction:column;}.statusbar{height:24px;background:#111;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;font-size:10px;color:rgba(255,255,255,0.4);}.info{padding:20px 16px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);}.info h3{font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);margin-bottom:4px;}.info p{font-size:11px;color:rgba(255,255,255,0.35);line-height:1.5;}.console-header{display:flex;align-items:center;gap:6px;padding:10px 16px 6px;font-size:11px;font-weight:600;color:#00d4ff;}.console{flex:1;padding:4px 16px 16px;font-family:'Courier New',monospace;font-size:12px;}.log{padding:4px 8px;margin:2px 0;border-left:2px solid #00d4ff;background:rgba(0,212,255,0.04);color:#00ff88;border-radius:0 4px 4px 0;}.var{color:#00d4ff;}.empty{color:rgba(255,255,255,0.2);font-style:italic;padding:8px 0;}</style></head><body>
-<div class="statusbar">12:00</div>
-<div class="info"><h3>Exercice console</h3><p>Cet exercice utilise <strong>print()</strong> — la sortie s'affiche ci-dessous.</p></div>
-<div class="console-header">Console Dart</div>
-<div class="console">${consoleLinesHTML}</div>
-</body></html>`;
-  }
-  let bodyHTML = "";
-  if (textMatches.length > 0) bodyHTML = textMatches.map(t => `<p style="margin:8px 0;font-size:16px;">${t}</p>`).join("");
-  if (hasButton) bodyHTML += `<button style="margin:12px 0;padding:12px 24px;background:#6200EA;color:#fff;border:none;border-radius:24px;font-size:14px;cursor:pointer;">Button</button>`;
-  if (hasListView) bodyHTML += `<div style="border-top:1px solid #e0e0e0;">${[1,2,3,4].map(i => `<div style="padding:16px;border-bottom:1px solid #e0e0e0;">List Item ${i}</div>`).join("")}</div>`;
-  if (hasImage) bodyHTML += `<div style="margin:12px 0;width:100%;height:120px;background:linear-gradient(135deg,#6200EA,#00BCD4);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;">Image</div>`;
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Roboto',sans-serif;background:#FAFAFA;min-height:100vh;}.appbar{background:#6200EA;color:#fff;padding:12px 16px;font-size:18px;font-weight:500;}.body{padding:16px;}.statusbar{height:24px;background:#4a148c;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;font-size:10px;color:rgba(255,255,255,0.7);}.fab{position:fixed;bottom:16px;right:16px;width:56px;height:56px;background:#6200EA;color:#fff;border:none;border-radius:28px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;}</style></head><body>
-<div class="statusbar">12:00</div>
-${hasAppBar ? `<div class="appbar">${appTitle}</div>` : ""}
-<div class="body">${bodyHTML}</div>
-${hasButton && code.includes("FloatingActionButton") ? `<button class="fab">+</button>` : ""}
-</body></html>`;
-}
-
-function buildTerminalOutput(code: string, moduleId: string): string[] {
-  const lines: string[] = [];
-  const timestamp = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  if (moduleId === "nodejs") {
-    lines.push(`$ node script.js`);
-    if (code.includes("console.log")) {
-      const logs = [...code.matchAll(/console\.log\(\s*(['"`])(.*?)\1/g)];
-      logs.forEach(m => lines.push(m[2]));
-      if (logs.length === 0) lines.push("[output]");
-    }
-    if (code.includes("listen(")) { const portMatch = code.match(/listen\(\s*(\d+)/); lines.push(`Server running on port ${portMatch ? portMatch[1] : "3000"}`); }
-    if (code.includes("readFile") || code.includes("readFileSync")) lines.push("[File content loaded]");
-    if (code.includes("writeFile") || code.includes("writeFileSync")) lines.push("File written successfully");
-    if (code.includes("express()")) lines.push("Express app initialized");
-    if (lines.length <= 1) lines.push("Process exited with code 0");
-  } else if (moduleId === "python") {
-    lines.push(`$ python main.py`);
-    const prints = [...code.matchAll(/print\(\s*(['"])(.*?)\1/g)];
-    prints.forEach(m => lines.push(m[2]));
-    if (code.includes("def ")) lines.push("[Function defined]");
-    if (code.includes("class ")) lines.push("[Class defined]");
-    if (lines.length <= 1) lines.push("Process finished with exit code 0");
-  } else if (moduleId === "cpp") {
-    lines.push(`$ g++ main.cpp -o main && ./main`);
-    const printfs = [...code.matchAll(/printf\(\s*"([^"]*?)(?:\\n)?"/g)];
-    printfs.forEach(m => lines.push(m[1].replace(/%[dfsczp]/g, "[val]")));
-    const couts = [...code.matchAll(/cout\s*<<\s*"([^"]*?)"/g)];
-    couts.forEach(m => lines.push(m[1]));
-    if (lines.length <= 1) lines.push("Process exited with code 0");
-  }
-  lines.push(`\n[${timestamp}] Terminé.`);
-  return lines;
-}
-
 /* ═══ PREVIEW PANELS ═══ */
 
 function LivePreviewPanel({ code, moduleId }: { code: string; moduleId: string }) {
@@ -211,18 +108,19 @@ function LivePreviewPanel({ code, moduleId }: { code: string; moduleId: string }
     return () => clearTimeout(timer);
   }, [code, moduleId, refreshKey]);
 
+  const { t } = useTranslation();
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10">
       <div className="flex items-center justify-between border-b border-white/5 bg-dark-surface px-3 py-1.5">
         <div className="flex items-center gap-2">
           <Monitor size={13} className="text-lyoko-blue" />
-          <span className="text-xs font-medium text-white/50">Aperçu en direct</span>
+          <span className="text-xs font-medium text-white/50">{t("exercises.live_preview")}</span>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => setDarkBg(!darkBg)} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title="Fond sombre/clair">
+          <button onClick={() => setDarkBg(!darkBg)} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title={t("exercises.dark_light_bg")}>
             {darkBg ? <Sun size={12} /> : <Moon size={12} />}
           </button>
-          <button onClick={() => setRefreshKey(k => k + 1)} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title="Rafraîchir">
+          <button onClick={() => setRefreshKey(k => k + 1)} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title={t("exercises.refresh")}>
             <RefreshCw size={12} />
           </button>
         </div>
@@ -240,98 +138,145 @@ function LivePreviewPanel({ code, moduleId }: { code: string; moduleId: string }
   );
 }
 
-function MobileEmulatorPanel({ code }: { code: string }) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
+type TermBlock = { kind: "cmd" | "stdout" | "stderr" | "meta" | "info"; text: string };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (iframeRef.current) iframeRef.current.srcdoc = buildMobilePreview(code);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [code]);
-
-  const isPortrait = orientation === "portrait";
-
-  return (
-    <div className="flex h-full flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-dark-surface/50">
-      <div className="flex w-full items-center justify-between border-b border-white/5 px-3 py-1.5">
-        <div className="flex items-center gap-2">
-          <Smartphone size={13} className="text-lyoko-purple" />
-          <span className="text-xs font-medium text-white/50">Émulateur Mobile</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setOrientation(o => o === "portrait" ? "landscape" : "portrait")} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title="Rotation">
-            <RotateCw size={12} />
-          </button>
-          <button onClick={() => { if (iframeRef.current) iframeRef.current.srcdoc = buildMobilePreview(code); }} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title="Rafraîchir">
-            <RefreshCw size={12} />
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-1 items-center justify-center p-3 w-full">
-        <div
-          className="relative overflow-hidden border-[3px] border-gray-700 bg-black shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-          style={{
-            width: isPortrait ? "min(260px, 70vw)" : "min(440px, 85vw)",
-            aspectRatio: isPortrait ? "280 / 420" : "500 / 280",
-            maxHeight: "100%",
-            borderRadius: isPortrait ? 32 : 24,
-          }}
-        >
-          {isPortrait && <div className="absolute left-1/2 top-0 z-10 h-[22px] w-[100px] -translate-x-1/2 rounded-b-xl bg-black" />}
-          <iframe ref={iframeRef} title="mobile-preview" sandbox="allow-scripts" className="h-full w-full border-0 bg-white" />
-          {isPortrait && <div className="absolute bottom-2 left-1/2 h-[4px] w-[100px] -translate-x-1/2 rounded-full bg-gray-600" />}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TerminalPanel({ code, moduleId, isRunning }: { code: string; moduleId: string; isRunning: boolean }) {
-  const [lines, setLines] = useState<string[]>([]);
+function TerminalPanel({ code, moduleId }: { code: string; moduleId: string }) {
+  const [blocks, setBlocks] = useState<TermBlock[]>([]);
+  const [running, setRunning] = useState(false);
+  const [stdin, setStdin] = useState("");
+  const [showStdin, setShowStdin] = useState(false);
   const termRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    if (isRunning) {
-      setLines([]);
-      const output = buildTerminalOutput(code, moduleId);
-      output.forEach((line, i) => {
-        setTimeout(() => {
-          setLines(prev => [...prev, line]);
-          if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight;
-        }, i * 150);
+  const langKey = EXEC_LANGUAGE[moduleId] || moduleId;
+  const langLabel =
+    moduleId === "nodejs" ? "Node.js 18" :
+    moduleId === "python" ? "Python 3.10" :
+    moduleId === "cpp" ? "g++ / C++ (GCC 10)" :
+    moduleId === "csharp" ? "C# (Mono 6.12)" :
+    moduleId === "dart" ? "Dart 2.19" :
+    moduleId === "c" ? "gcc / C (GCC 10)" :
+    moduleId;
+  const cmd =
+    moduleId === "nodejs" ? "$ node main.js" :
+    moduleId === "python" ? "$ python3 main.py" :
+    moduleId === "cpp" ? "$ g++ main.cpp -o main && ./main" :
+    moduleId === "csharp" ? "$ mcs main.cs && mono main.exe" :
+    moduleId === "dart" ? "$ dart run main.dart" :
+    moduleId === "c" ? "$ gcc main.c -o main && ./main" :
+    "$ run";
+
+  const scrollDown = () => {
+    requestAnimationFrame(() => {
+      if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight;
+    });
+  };
+
+  const execute = async () => {
+    if (running) return;
+    setRunning(true);
+    setBlocks([{ kind: "cmd", text: cmd }]);
+    scrollDown();
+    try {
+      const res = await fetch("/api/db/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: langKey, code, stdin }),
       });
+      const data = await res.json();
+      const next: TermBlock[] = [{ kind: "cmd", text: cmd }];
+      if (!data.success) {
+        next.push({ kind: "stderr", text: data.error || t("exercises.exec_failed") });
+      } else {
+        if (data.compileOutput) next.push({ kind: "stderr", text: data.compileOutput });
+        if (data.output) next.push({ kind: "stdout", text: data.output });
+        if (data.stderr) next.push({ kind: "stderr", text: data.stderr });
+        if (!data.output && !data.stderr && !data.compileOutput) {
+          next.push({ kind: "info", text: t("exercises.no_output") });
+        }
+        next.push({ kind: "meta", text: `${t("exercises.exit_code")}: ${data.exitCode}` });
+      }
+      setBlocks(next);
+    } catch (e: any) {
+      setBlocks([
+        { kind: "cmd", text: cmd },
+        { kind: "stderr", text: e?.message || t("exercises.network_error") },
+      ]);
+    } finally {
+      setRunning(false);
+      scrollDown();
     }
-  }, [isRunning, code, moduleId]);
-
-  const langLabel = moduleId === "nodejs" ? "Node.js" : moduleId === "python" ? "Python 3" : moduleId === "cpp" ? "g++ / C++" : moduleId;
+  };
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10">
       <div className="flex items-center justify-between border-b border-white/5 bg-dark-surface px-3 py-1.5">
-        <div className="flex items-center gap-2">
-          <TerminalSquare size={13} className="text-lyoko-green" />
-          <span className="text-xs font-medium text-white/50">Terminal — {langLabel}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <TerminalSquare size={13} className="text-lyoko-green flex-shrink-0" />
+          <span className="text-xs font-medium text-white/50 truncate">{t("exercises.terminal")} — {langLabel}</span>
         </div>
-        <div className="flex items-center gap-1">
-          {isRunning && <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-lyoko-green" />}
-          <button onClick={() => setLines([])} className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[36px] min-w-[36px] flex items-center justify-center" title="Effacer">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {running && <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-lyoko-green" />}
+          <button
+            onClick={() => setShowStdin(s => !s)}
+            className={`rounded px-2 py-1 text-[0.7rem] transition-colors min-h-[28px] ${showStdin ? "bg-lyoko-blue/15 text-lyoko-blue" : "text-white/40 hover:bg-white/5 hover:text-white/70"}`}
+            title={t("exercises.toggle_stdin")}
+          >
+            stdin
+          </button>
+          <button
+            onClick={execute}
+            disabled={running}
+            className="flex items-center gap-1 rounded bg-lyoko-green/15 px-2 py-1 text-[0.7rem] font-semibold text-lyoko-green hover:bg-lyoko-green/25 disabled:opacity-50 min-h-[28px]"
+            title={t("exercises.run_btn")}
+          >
+            {running ? <RefreshCw size={11} className="animate-spin" /> : <Play size={11} />}
+            {running ? (t("exercises.run_running")) : (t("exercises.run_btn"))}
+          </button>
+          <button
+            onClick={() => setBlocks([])}
+            className="rounded p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60 min-h-[28px] min-w-[28px] flex items-center justify-center"
+            title={t("exercises.clear")}
+          >
             <RotateCcw size={11} />
           </button>
         </div>
       </div>
-      <div ref={termRef} className="flex-1 overflow-y-auto bg-[#0c0c0c] p-3 font-mono text-[0.78rem] leading-relaxed" style={{ minHeight: 300 }}>
-        {lines.length === 0 ? (
-          <span className="text-white/20">En attente d&apos;exécution...</span>
+      {showStdin && (
+        <div className="border-b border-white/5 bg-dark-surface/60 px-3 py-2">
+          <label className="mb-1 block text-[0.65rem] uppercase tracking-wide text-white/40">
+            stdin {t("exercises.stdin_piped")}
+          </label>
+          <textarea
+            value={stdin}
+            onChange={(e) => setStdin(e.target.value)}
+            spellCheck={false}
+            placeholder={t("exercises.stdin_placeholder")}
+            className="block w-full resize-y rounded bg-[#0c0c0c] p-2 font-mono text-[0.75rem] text-white/80 placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-lyoko-blue/40"
+            rows={2}
+          />
+        </div>
+      )}
+      <div ref={termRef} className="flex-1 overflow-y-auto bg-[#0c0c0c] p-3 font-mono text-[0.78rem] leading-relaxed whitespace-pre-wrap" style={{ minHeight: 300 }}>
+        {blocks.length === 0 ? (
+          <span className="text-white/20">{t("exercises.waiting_execution")}</span>
         ) : (
-          lines.map((line, i) => (
-            <div key={i} className={`${line.startsWith("$") ? "text-lyoko-blue" : line.startsWith("[") || line.startsWith("\n") ? "text-white/30" : line.includes("❌") || line.includes("Error") ? "text-xana-red" : "text-lyoko-green"}`}>
-              {line}
+          blocks.map((b, i) => (
+            <div
+              key={i}
+              className={
+                b.kind === "cmd" ? "text-lyoko-blue" :
+                b.kind === "stderr" ? "text-xana-red" :
+                b.kind === "meta" ? "text-white/30 mt-1" :
+                b.kind === "info" ? "text-white/30 italic" :
+                "text-lyoko-green"
+              }
+            >
+              {b.text}
             </div>
           ))
         )}
-        {isRunning && <span className="inline-block h-4 w-1.5 animate-pulse bg-lyoko-green" />}
+        {running && <span className="inline-block h-4 w-1.5 animate-pulse bg-lyoko-green" />}
       </div>
     </div>
   );
@@ -373,6 +318,19 @@ const TYPE_ICONS: Record<string, any> = { intro: BookOpen, quiz: CircleDot, puzz
 /* ═══ ENHANCED EXERCISE CLIENT ═══ */
 export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, moduleLevels }: Props) {
   const { user, updateProgress, addXp, refreshUser } = useAuth();
+  const { t } = useTranslation();
+
+  const getCategoryTranslation = useCallback((cat: string) => {
+    const key = `categories.${cat}`;
+    const trans = t(key);
+    return trans === key ? cat : trans;
+  }, [t]);
+
+  const getModuleTranslation = useCallback((id: string, fallback: string) => {
+    const key = `modules_data.${id}.name`;
+    const trans = t(key);
+    return trans === key ? fallback : trans;
+  }, [t]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
@@ -411,15 +369,17 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
     setXpToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // Load exercises (registry is static, so this is cheap)
+  // Lazy-load exercises for this module only (saves ~80% of the initial bundle)
   useEffect(() => {
-    const data = getExercises(moduleId);
-    if (data.length > 0) {
-      setExercises(data);
-    }
-    // Pre-populate shown milestones so we don't re-fire on page load
+    let cancelled = false;
+    loadModule(moduleId).then(() => {
+      if (cancelled) return;
+      const data = getExercises(moduleId);
+      if (data.length > 0) setExercises(data);
+    });
     shownMilestonesRef.current = new Set([25, 50, 75, 100]);
-    migrationDoneRef.current = false; // allow migration to run once per module
+    migrationDoneRef.current = false;
+    return () => { cancelled = true; };
   }, [moduleId]);
 
   // ── Sync completed set from the server (source of truth: user.progress) ──
@@ -503,6 +463,14 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
       fireXpToast(xpEarned, multiplier > 1 ? multiplier : undefined);
       if (multiplier > 1) play("combo");
     });
+
+    // Mark the daily challenge as completed (idempotent server-side: first solve
+    // of the day from any exercise grows the streak; subsequent solves are no-ops).
+    fetch("/api/db/daily", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ durationS: 0 }),
+    }).catch(() => { /* silent: best-effort */ });
 
     // Milestone check
     if (exercises.length > 0) {
@@ -647,7 +615,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
       {sidebarOpen && !zenMode && (
         <button
           type="button"
-          aria-label="Fermer le menu"
+          aria-label={t("exercises.close_menu")}
           onClick={() => setSidebarOpen(false)}
           className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
         />
@@ -671,11 +639,11 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
               className="h-4 w-4 rounded-full animate-pulse"
               style={{ background: moduleColor, boxShadow: `0 0 15px ${moduleColor}` }}
             />
-            <h2 className="font-display text-sm font-bold text-white">{moduleName}</h2>
+            <h2 className="font-display text-sm font-bold text-white">{getModuleTranslation(moduleId, moduleName)}</h2>
             <button
               type="button"
               onClick={() => setSidebarOpen(false)}
-              aria-label="Fermer"
+              aria-label={t("exercises.close")}
               className="ml-auto rounded-lg p-2 text-white/50 hover:bg-white/5 hover:text-white md:hidden"
             >
               <XIcon size={18} />
@@ -685,7 +653,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
           {/* Progress bar */}
           <div className="mb-4">
             <div className="flex justify-between mb-1.5">
-              <span className="text-xs text-white/40">Progression</span>
+              <span className="text-xs text-white/40">{t("dashboard.progress")}</span>
               <span className="text-xs font-medium" style={{ color: moduleColor }}>
                 {completed.size}/{exercises.length}
               </span>
@@ -732,7 +700,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un exercice..."
+              placeholder={t("exercises.search_placeholder")}
               className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none transition-all"
             />
           </div>
@@ -752,13 +720,13 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
                     index={i}
                   />
                 ))}
-                {filtered.length === 0 && <p className="py-4 text-center text-xs text-white/30">Aucun résultat</p>}
+                {filtered.length === 0 && <p className="py-4 text-center text-xs text-white/30">{t("exercises.no_results")}</p>}
               </div>
             ) : (
               Object.entries(categories).map(([cat, exs]) => (
                 <div key={cat}>
                   <CategoryHeader
-                    title={cat}
+                    title={getCategoryTranslation(cat)}
                     count={exs.length}
                     completed={exs.filter((e) => completed.has(e.id)).length}
                   />
@@ -790,7 +758,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
           <button
             type="button"
             onClick={() => setSidebarOpen((p) => !p)}
-            aria-label="Ouvrir le menu"
+            aria-label={t("exercises.open_menu")}
             className="rounded-lg p-2 text-white/60 hover:bg-white/5 hover:text-white md:hidden"
           >
             <Menu size={18} />
@@ -799,7 +767,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
           <div className="flex min-w-0 items-center gap-1.5 mr-2">
             <Link href="/dashboard" className="text-white/30 hover:text-white/60 transition-colors"><Home size={14} /></Link>
             <ChevronRight size={12} className="text-white/15" />
-            <span className="hidden truncate text-xs text-white/40 sm:inline">{moduleName}</span>
+            <span className="hidden truncate text-xs text-white/40 sm:inline">{getModuleTranslation(moduleId, moduleName)}</span>
             {exercise && <><ChevronRight size={12} className="hidden text-white/15 sm:inline-block" /><span className="text-xs font-medium text-white/60">#{currentIdx + 1}</span></>}
           </div>
 
@@ -823,7 +791,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
           {/* Skip button */}
           <button
             onClick={skipToNextUncompleted}
-            title="Prochain non-complété (S)"
+            title={t("exercises.next_uncompleted")}
             className="rounded-lg p-1.5 text-white/30 hover:bg-lyoko-blue/10 hover:text-lyoko-blue transition-all"
           >
             <SkipForward size={16} />
@@ -832,7 +800,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
           {/* Zen toggle */}
           <button
             onClick={() => setZenMode(!zenMode)}
-            title="Mode Focus (F)"
+            title={t("exercises.focus_mode")}
             className="rounded-lg p-1.5 text-white/30 hover:bg-lyoko-purple/10 hover:text-lyoko-purple transition-all"
           >
             {zenMode ? <Shrink size={16} /> : <Expand size={16} />}
@@ -926,6 +894,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
 
 // Enhanced Intro View
 function IntroViewEnhanced({ ex, onComplete, isCompleted, color }: { ex: Exercise; onComplete: () => void; isCompleted: boolean; color: string }) {
+  const { t } = useTranslation();
   const [done, setDone] = useState(false);
   const { play } = useSound();
 
@@ -958,14 +927,14 @@ function IntroViewEnhanced({ ex, onComplete, isCompleted, color }: { ex: Exercis
       {ex.content && (
         <div
           className="intro-content mb-5 rounded-xl border border-white/[0.08] bg-white/[0.02] p-6 text-[0.95rem] leading-[1.8] text-white/80"
-          dangerouslySetInnerHTML={{ __html: ex.content }}
+          dangerouslySetInnerHTML={safeHtml(ex.content)}
         />
       )}
 
       {ex.code_example && (
         <div className="mb-5">
           <h3 className="mb-2 text-sm font-medium text-white/50">
-            <Code size={14} className="mr-1 inline" /> Exemple :
+            <Code size={14} className="mr-1 inline" /> {t("exercises.example")}
           </h3>
           <pre className="overflow-x-auto rounded-xl border border-white/[0.08] bg-[#0d0d1a] p-4">
             <code className="font-mono text-sm text-white/85">{ex.code_example}</code>
@@ -986,7 +955,7 @@ function IntroViewEnhanced({ ex, onComplete, isCompleted, color }: { ex: Exercis
             boxShadow: done || isCompleted ? "none" : `0 0 25px ${color}40`,
           }}
         >
-          {done || isCompleted ? <><Check size={16} /> Section lue ! +25 XP</> : <><ChevronRight size={16} /> J&apos;ai compris, continuer !</>}
+          {done || isCompleted ? <><Check size={16} /> {t("exercises.section_read_xp")}</> : <><ChevronRight size={16} /> {t("exercises.understand_continue")}</>}
         </button>
       </div>
     </div>
@@ -1013,28 +982,45 @@ function CodeViewEnhanced({
   moduleId: string;
   onWrong?: () => void;
 }) {
-  const [code, setCode] = useState(ex.code_template || "");
+  const storageKey = `carthage:code:${moduleId}:${ex.id}`;
+  const readSaved = () => {
+    if (typeof window === "undefined") return null;
+    try { return window.localStorage.getItem(storageKey); } catch { return null; }
+  };
+  const [code, setCode] = useState<string>(() => readSaved() ?? ex.code_template ?? "");
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [showPreview, setShowPreview] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
-  const [termRunKey, setTermRunKey] = useState(0);
-  const [isTermRunning, setIsTermRunning] = useState(false);
   const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { play } = useSound();
+  const { t } = useTranslation();
 
   const hasVisual = VISUAL_MODULES.includes(moduleId);
-  const hasMobile = MOBILE_MODULES.includes(moduleId);
   const hasTerminal = TERMINAL_MODULES.includes(moduleId);
-  const hasPanel = hasVisual || hasMobile || hasTerminal;
+  const hasPanel = hasVisual || hasTerminal;
 
+  // Re-load when exercise changes — prefer saved draft over fresh template.
   useEffect(() => {
-    setCode(ex.code_template || "");
+    const saved = readSaved();
+    setCode(saved ?? ex.code_template ?? "");
     setOutput("");
     setStatus("idle");
-    setIsTermRunning(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ex]);
+
+  // Debounced persistence (only when code differs from the template).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const tmpl = ex.code_template ?? "";
+    const id = setTimeout(() => {
+      try {
+        if (code === tmpl) window.localStorage.removeItem(storageKey);
+        else window.localStorage.setItem(storageKey, code);
+      } catch { /* quota or private mode — ignore */ }
+    }, 400);
+    return () => clearTimeout(id);
+  }, [code, ex.code_template, storageKey]);
 
   const runCode = () => {
     play("codeRun");
@@ -1046,7 +1032,7 @@ function CodeViewEnhanced({
       if (result.pass) {
         play("success");
         setStatus("success");
-        setOutput("✓ Bravo ! Exercice réussi ! +25 XP");
+        setOutput(t("exercises.exercise_done_xp"));
         onComplete();
         setTimeout(() => play("xp"), 300);
         setTimeout(() => goNext(), 1500);
@@ -1055,7 +1041,7 @@ function CodeViewEnhanced({
         setStatus("error");
         const hint = ex.hint ? `\n💡 ${ex.hint}` : "";
         const reason = result.failReason ? `\n${result.failReason}` : "";
-        setOutput(`✗ Pas tout à fait... Vérifiez votre code.${reason}${hint}`);
+        setOutput(`${t("exercises.exercise_wrong")}${reason}${hint}`);
         onWrong?.();
       }
     }, 600);
@@ -1087,7 +1073,7 @@ function CodeViewEnhanced({
               onClick={() => setShowPreview(!showPreview)}
               className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 transition-all hover:bg-white/5 hover:text-white/70 min-h-[36px]"
             >
-              {showPreview ? <><EyeOff size={13} /> Masquer</> : <><Eye size={13} /> Aperçu</>}
+              {showPreview ? <><EyeOff size={13} /> {t("exercises.hide")}</> : <><Eye size={13} /> {t("exercises.preview")}</>}
             </button>
           )}
         </div>
@@ -1096,13 +1082,13 @@ function CodeViewEnhanced({
       {ex.description && <p className="mb-3 text-sm text-white/60">{ex.description}</p>}
 
       {ex.instruction && (
-        <div className="mb-3 rounded-xl border-l-4 border-lyoko-green bg-white/[0.02] px-4 py-3 text-sm text-white/70" dangerouslySetInnerHTML={{ __html: ex.instruction }} />
+        <div className="mb-3 rounded-xl border-l-4 border-lyoko-green bg-white/[0.02] px-4 py-3 text-sm text-white/70" dangerouslySetInnerHTML={safeHtml(ex.instruction)} />
       )}
 
       {ex.preview && (
         <div className="mb-3">
-          <h3 className="mb-1.5 text-xs font-medium text-white/40"><Eye size={12} className="mr-1 inline" /> Résultat attendu :</h3>
-          <div className="rounded-lg bg-white p-3 text-sm text-gray-800" dangerouslySetInnerHTML={{ __html: ex.preview }} />
+          <h3 className="mb-1.5 text-xs font-medium text-white/40"><Eye size={12} className="mr-1 inline" /> {t("exercises.expected_result")}</h3>
+          <div className="rounded-lg bg-white p-3 text-sm text-gray-800" dangerouslySetInnerHTML={safeHtml(ex.preview)} />
         </div>
       )}
 
@@ -1112,7 +1098,7 @@ function CodeViewEnhanced({
             ex.help_steps.slice(0, helpLevel).map((step, i) => (
               <div key={i} className="rounded-lg border border-carthage-gold/30 bg-carthage-gold/10 px-4 py-2 text-sm text-carthage-gold animate-fadeIn">
                 <Lightbulb size={14} className="inline mr-2" />
-                Indice {i + 1}: {step}
+                {t("exercises.hint_prefix")} {i + 1}: {step}
               </div>
             ))
           ) : ex.hint ? (
@@ -1132,15 +1118,15 @@ function CodeViewEnhanced({
             onClick={() => setMobileTab("editor")}
             className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${mobileTab === "editor" ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"}`}
           >
-            <Code size={13} className="mr-1 inline" /> Éditeur
+            <Code size={13} className="mr-1 inline" /> {t("exercises.editor")}
           </button>
           <button
             type="button"
             onClick={() => setMobileTab("preview")}
             className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${mobileTab === "preview" ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"}`}
           >
-            {hasTerminal ? <TerminalSquare size={13} className="mr-1 inline" /> : hasMobile ? <Smartphone size={13} className="mr-1 inline" /> : <Monitor size={13} className="mr-1 inline" />}
-            Aperçu
+            {hasTerminal ? <TerminalSquare size={13} className="mr-1 inline" /> : <Monitor size={13} className="mr-1 inline" />}
+            {t("exercises.preview")}
           </button>
         </div>
       )}
@@ -1149,47 +1135,27 @@ function CodeViewEnhanced({
         <div className={`flex flex-col overflow-hidden rounded-xl border border-white/10 ${showPreview && hasPanel ? `lg:w-1/2 ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}` : "w-full"}`}>
           <div className="flex items-center justify-between border-b border-white/5 bg-dark-surface px-3 py-2 sm:px-4">
             <span className="font-mono text-xs text-white/40">{fileName}</span>
-            <span className="hidden text-[0.7rem] text-white/20 sm:inline">Ctrl+Enter pour valider</span>
+            <span className="hidden text-[0.7rem] text-white/20 sm:inline">{t("exercises.ctrl_enter")}</span>
             <div className="flex gap-1">
               <div className="h-2 w-2 rounded-full bg-red-500/60" />
               <div className="h-2 w-2 rounded-full bg-yellow-500/60" />
               <div className="h-2 w-2 rounded-full bg-green-500/60" />
             </div>
           </div>
-          <textarea
-            ref={textareaRef}
+          <CodeEditor
             value={code}
-            onChange={(e) => setCode(e.target.value)}
-            spellCheck={false}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            inputMode="text"
-            className="block flex-1 resize-none bg-dark-bg p-3 font-mono text-[16px] leading-relaxed text-white/90 placeholder:text-white/20 focus:outline-none sm:p-4 sm:text-[0.85rem]"
-            style={{ minHeight: 240 }}
-            onKeyDown={(e) => {
-              if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-                e.preventDefault();
-                runCode();
-              }
-              if (e.key === "Tab") {
-                e.preventDefault();
-                const t = e.currentTarget;
-                const s = t.selectionStart;
-                setCode(code.substring(0, s) + "  " + code.substring(t.selectionEnd));
-                setTimeout(() => { t.selectionStart = t.selectionEnd = s + 2; }, 0);
-              }
-            }}
+            onChange={setCode}
+            moduleId={moduleId}
+            onRun={runCode}
+            className="flex-1"
+            minHeight={240}
           />
-          {/* Mobile code-insert bar */}
-          <CodeInsertBar textareaRef={textareaRef} code={code} setCode={setCode} />
         </div>
 
         {showPreview && hasPanel && (
           <div className={`lg:w-1/2 ${mobileTab === "preview" ? "flex flex-1 flex-col" : "hidden lg:flex lg:flex-1 lg:flex-col"}`} style={{ minHeight: 240 }}>
             {hasVisual && <LivePreviewPanel code={code} moduleId={moduleId} />}
-            {hasMobile && <MobileEmulatorPanel code={code} />}
-            {hasTerminal && <TerminalPanel code={code} moduleId={moduleId} isRunning={isTermRunning} key={termRunKey} />}
+            {hasTerminal && <TerminalPanel code={code} moduleId={moduleId} />}
           </div>
         )}
       </div>
@@ -1207,25 +1173,31 @@ function CodeViewEnhanced({
         className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-lyoko-blue to-lyoko-green px-5 py-2.5 text-sm font-bold text-dark-bg transition-all hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] disabled:opacity-50"
       >
         {isRunning ? <RefreshCw size={15} className="animate-spin" /> : <Play size={15} />}
-        {isRunning ? "Exécution..." : "Valider"}
+        {isRunning ? t("exercises.running") : t("exercises.submit")}
       </button>
 
       {((ex.help_steps && helpLevel < ex.help_steps.length) || (ex.hint && helpLevel === 0)) && (
         <button onClick={showHelp} className="flex items-center gap-2 rounded-xl border border-carthage-gold/30 px-4 py-2.5 text-sm text-carthage-gold transition-all hover:bg-carthage-gold/10">
-          <Lightbulb size={15} /> Aide
+          <Lightbulb size={15} /> {t("exercises.help")}
         </button>
       )}
 
       <button
-        onClick={() => { play("reset"); setCode(ex.code_template || ""); setOutput(""); setStatus("idle"); }}
+        onClick={() => {
+          play("reset");
+          setCode(ex.code_template || "");
+          setOutput("");
+          setStatus("idle");
+          try { window.localStorage.removeItem(storageKey); } catch { /* ignore */ }
+        }}
         className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm text-white/50 transition-all hover:bg-white/5"
       >
-        <RotateCcw size={15} /> Reset
+        <RotateCcw size={15} /> {t("exercises.reset")}
       </button>
 
       {status === "success" && (
         <button onClick={goNext} className="flex items-center gap-2 rounded-xl border border-lyoko-green/30 bg-lyoko-green/10 px-5 py-2.5 text-sm font-medium text-lyoko-green transition-all hover:bg-lyoko-green/20">
-          <ChevronRight size={15} /> Suivant
+          <ChevronRight size={15} /> {t("exercises.next")}
         </button>
       )}
     </div>
@@ -1244,58 +1216,9 @@ function CodeViewEnhanced({
   );
 }
 
-// Mobile-only code insert bar — sits below the textarea, helps type code on touch keyboards
-const INSERT_CHARS = ["{", "}", "(", ")", "[", "]", "<", ">", ";", ":", "'", '"', "=", "/"];
-function CodeInsertBar({
-  textareaRef,
-  code,
-  setCode,
-}: {
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-  code: string;
-  setCode: (s: string) => void;
-}) {
-  const insert = (str: string) => {
-    const t = textareaRef.current;
-    if (!t) {
-      setCode(code + str);
-      return;
-    }
-    const s = t.selectionStart;
-    const e = t.selectionEnd;
-    const next = code.substring(0, s) + str + code.substring(e);
-    setCode(next);
-    setTimeout(() => {
-      t.focus();
-      t.selectionStart = t.selectionEnd = s + str.length;
-    }, 0);
-  };
-  return (
-    <div className="flex items-center gap-1 overflow-x-auto border-t border-white/5 bg-dark-surface/80 px-2 py-1.5 lg:hidden">
-      <button
-        type="button"
-        onClick={() => insert("  ")}
-        className="flex-shrink-0 rounded-md bg-white/5 px-2.5 py-1.5 font-mono text-[0.75rem] text-white/70 hover:bg-white/10 active:bg-white/20"
-        aria-label="Tabulation"
-      >
-        ⇥
-      </button>
-      {INSERT_CHARS.map((c) => (
-        <button
-          key={c}
-          type="button"
-          onClick={() => insert(c)}
-          className="flex-shrink-0 rounded-md bg-white/5 px-2.5 py-1.5 font-mono text-[0.85rem] text-white/70 hover:bg-white/10 active:bg-white/20"
-        >
-          {c}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 // Empty state component
 function EmptyState({ moduleName, moduleLevels }: { moduleName: string; moduleLevels: number }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="relative mb-6">
@@ -1306,9 +1229,9 @@ function EmptyState({ moduleName, moduleLevels }: { moduleName: string; moduleLe
       </div>
       <h2 className="mb-2 font-display text-2xl font-bold text-white/60">Module {moduleName}</h2>
       <p className="mb-4 max-w-md text-sm text-white/40">
-        {moduleLevels} exercices interactifs vous attendent. Commencez votre parcours d&apos;apprentissage dès maintenant !
+        {moduleLevels} {t("exercises.empty_state_desc")}
       </p>
-      <p className="text-xs text-white/25">Les exercices sont chargés automatiquement depuis la base de données du projet.</p>
+      <p className="text-xs text-white/25">{t("exercises.empty_state_loaded")}</p>
     </div>
   );
 }

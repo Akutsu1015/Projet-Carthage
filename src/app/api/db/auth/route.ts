@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createUser, getUserByUsername, getUserByEmail, verifyPassword,
-  createSession, getSessionUser, deleteSession, updateLastLogin,
+  createSession, getSessionUser, deleteSession, deleteAllSessionsForUser, updateLastLogin,
   getFullUserData, createEmailVerification,
 } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
@@ -122,6 +122,17 @@ export async function POST(req: NextRequest) {
       if (token) deleteSession(token);
 
       const res = NextResponse.json({ success: true });
+      res.cookies.delete("carthage_session");
+      return res;
+    }
+
+    // ── LOGOUT ALL DEVICES ──
+    if (action === "logout_all") {
+      const token = getTokenFromRequest(req);
+      const dbUser = token ? getSessionUser(token) : null;
+      if (!dbUser) return NextResponse.json({ success: false, error: "Non authentifié." }, { status: 401 });
+      const count = deleteAllSessionsForUser(dbUser.id);
+      const res = NextResponse.json({ success: true, revoked: count });
       res.cookies.delete("carthage_session");
       return res;
     }

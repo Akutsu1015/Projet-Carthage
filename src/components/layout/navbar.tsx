@@ -6,7 +6,7 @@ import Image from "next/image";
 import {
   GraduationCap, LayoutDashboard, LogIn, Rocket,
   LogOut, User, Medal, Volume2, VolumeX, Trophy, Sun, Moon, Heart, Swords, Code,
-  Crown, Languages, Zap, Menu, X as XIcon, Shield, Award,
+  Crown, Languages, Zap, Menu, X as XIcon, Shield, Award, Settings,
 } from "lucide-react";
 
 const PAYPAL_DONATE_URL =
@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSound } from "@/lib/sound-manager";
 import { useTheme } from "next-themes";
 import { useTranslation } from "@/lib/translation-context";
+import { GlobalSearch } from "@/components/global-search";
 
 // ─── Nav link definitions ────────────────────────────────────────────────────
 
@@ -150,11 +151,15 @@ export function Navbar() {
                     <Shield size={14} />
                   </Link>
                 )}
+                <GlobalSearch />
                 <Link href="/leaderboard" className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm text-white/60 transition-colors hover:text-[#ffd700]">
                   <Trophy size={14} />
                 </Link>
                 <Link href="/badges" className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm text-white/60 transition-colors hover:text-carthage-gold">
                   <Medal size={14} />
+                </Link>
+                <Link href="/settings" className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm text-white/60 transition-colors hover:text-white" title="Paramètres">
+                  <Settings size={14} />
                 </Link>
                 <Link
                   href="/dashboard"

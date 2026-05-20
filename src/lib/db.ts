@@ -224,6 +224,40 @@ function initTables(db: Database.Database) {
     );
     CREATE INDEX IF NOT EXISTS idx_attempt_user  ON certification_attempts(user_id);
     CREATE INDEX IF NOT EXISTS idx_attempt_module ON certification_attempts(user_id, module_id);
+
+    -- ═══ CODE EXECUTION LOG ═══
+    -- Anti-abuse + analytics for the Piston-backed /api/db/execute endpoint.
+    CREATE TABLE IF NOT EXISTS execution_log (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id     INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      ip          TEXT,
+      language    TEXT    NOT NULL,
+      exit_code   INTEGER,
+      code_len    INTEGER NOT NULL DEFAULT 0,
+      duration_ms INTEGER NOT NULL DEFAULT 0,
+      error       TEXT,
+      created_at  TEXT    DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_execlog_user ON execution_log(user_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_execlog_ip   ON execution_log(ip, created_at);
+    CREATE INDEX IF NOT EXISTS idx_execlog_when ON execution_log(created_at);
+
+    -- ═══ DAILY CHALLENGE ═══
+    -- One curated exercise per UTC day. Solving it grants bonus XP + a streak counter.
+    CREATE TABLE IF NOT EXISTS daily_challenges (
+      day         TEXT    PRIMARY KEY,                  -- 'YYYY-MM-DD'
+      module_id   TEXT    NOT NULL,
+      exercise_id TEXT    NOT NULL,
+      created_at  TEXT    DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS daily_completions (
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      day        TEXT    NOT NULL,
+      solved_at  TEXT    DEFAULT (datetime('now')),
+      duration_s INTEGER DEFAULT 0,
+      PRIMARY KEY (user_id, day)
+    );
+    CREATE INDEX IF NOT EXISTS idx_daily_user ON daily_completions(user_id, day);
   `);
 
   // Initialize battle & playground tables
@@ -360,6 +394,13 @@ export function updateUserAvatar(userId: number, type: string, value: string, co
   db.prepare("UPDATE users SET avatar_type = ?, avatar_value = ?, avatar_color = ? WHERE id = ?").run(type, value, color, userId);
 }
 
+/** Update the user's public bio. Truncated to 280 chars (Twitter-style). */
+export function updateUserBio(userId: number, bio: string): void {
+  const db = getDb();
+  const clean = (bio || "").slice(0, 280);
+  db.prepare("UPDATE users SET bio = ? WHERE id = ?").run(clean, userId);
+}
+
 export function updateLastLogin(userId: number): void {
   const db = getDb();
   db.prepare("UPDATE users SET last_login = datetime('now') WHERE id = ?").run(userId);
@@ -393,6 +434,101 @@ export function getSessionUser(token: string): DbUser | null {
 export function deleteSession(token: string): void {
   const db = getDb();
   db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+}
+
+/** Revoke every active session for a user — useful for "logout from all devices". */
+export function deleteAllSessionsForUser(userId: number): number {
+  const db = getDb();
+  const r = db.prepare("DELETE FROM sessions WHERE user_id = ?").run(userId);
+  return r.changes;
+}
+
+/** Drop expired sessions. Called from a background interval below to keep the table small. */
+export function purgeExpiredSessions(): number {
+  const db = getDb();
+  const r = db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run();
+  return r.changes;
+}
+
+/* ═══ DAILY CHALLENGE ═══ */
+
+interface DailyChallengeRow {
+  day: string;
+  module_id: string;
+  exercise_id: string;
+}
+
+/**
+ * Get (and lazily create) today's challenge. We pick a deterministic exercise
+ * based on the date, so all users see the same one for that day.
+ */
+export function getTodaysChallenge(): DailyChallengeRow | null {
+  const db = getDb();
+  const day = new Date().toISOString().slice(0, 10);
+  const existing = db.prepare("SELECT * FROM daily_challenges WHERE day = ?").get(day) as DailyChallengeRow | undefined;
+  if (existing) return existing;
+
+  // No challenge yet — pick a (module, exercise) deterministically from progress data.
+  // Reuse the most-popular module among signed-up users; falls back to "python".
+  const popular = db.prepare(
+    `SELECT module_id, COUNT(*) c FROM exercise_progress
+     GROUP BY module_id ORDER BY c DESC LIMIT 5`
+  ).all() as { module_id: string; c: number }[];
+  const moduleId = popular[0]?.module_id || "python";
+
+  // Choose an arbitrary "code" exercise id for the day — caller's UI is responsible
+  // for resolving the exercise from the in-memory registry.
+  const exerciseId = `${moduleId}-daily-${day}`;
+  db.prepare("INSERT OR REPLACE INTO daily_challenges (day, module_id, exercise_id) VALUES (?, ?, ?)")
+    .run(day, moduleId, exerciseId);
+  return { day, module_id: moduleId, exercise_id: exerciseId };
+}
+
+/** Mark today's daily as completed for this user (idempotent). */
+export function completeDailyChallenge(userId: number, durationS: number): { newlyCompleted: boolean; streak: number } {
+  const db = getDb();
+  const day = new Date().toISOString().slice(0, 10);
+  const r = db.prepare(
+    "INSERT OR IGNORE INTO daily_completions (user_id, day, duration_s) VALUES (?, ?, ?)"
+  ).run(userId, day, durationS);
+  const newlyCompleted = r.changes > 0;
+  return { newlyCompleted, streak: getDailyStreak(userId) };
+}
+
+/** Count consecutive days ending today (or yesterday) where the user completed the daily. */
+export function getDailyStreak(userId: number): number {
+  const db = getDb();
+  const rows = db.prepare(
+    `SELECT day FROM daily_completions WHERE user_id = ?
+     AND day >= date('now', '-60 day') ORDER BY day DESC`
+  ).all(userId) as { day: string }[];
+  if (rows.length === 0) return 0;
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+  let cursor = rows[0].day === today ? today : rows[0].day === yesterday ? yesterday : null;
+  if (!cursor) return 0;
+  let streak = 0;
+  for (const r of rows) {
+    if (r.day === cursor) {
+      streak++;
+      cursor = new Date(new Date(cursor).getTime() - 86_400_000).toISOString().slice(0, 10);
+    } else break;
+  }
+  return streak;
+}
+
+// Run an hourly cleanup of expired sessions (and expired email verifications).
+// Guarded against multiple inits via globalThis.
+if (typeof globalThis !== "undefined" && !(globalThis as any).__carthage_sessionPurger) {
+  (globalThis as any).__carthage_sessionPurger = setInterval(() => {
+    try {
+      const n = purgeExpiredSessions();
+      getDb().prepare("DELETE FROM email_verifications WHERE expires_at <= datetime('now')").run();
+      if (n > 0) console.log(`[sessions] purged ${n} expired`);
+    } catch (e) {
+      console.error("[sessions] purge failed", e);
+    }
+  }, 3600_000);
 }
 
 export function deleteUserSessions(userId: number): void {
@@ -580,6 +716,13 @@ function initBattleAndPlaygroundTables(db: Database.Database) {
   try { db.exec(`ALTER TABLE code_battles ADD COLUMN mode TEXT NOT NULL DEFAULT 'casual'`); } catch { }
   try { db.exec(`ALTER TABLE code_battles ADD COLUMN difficulty TEXT NOT NULL DEFAULT 'easy'`); } catch { }
   try { db.exec(`ALTER TABLE code_battles ADD COLUMN ranked_delta INTEGER DEFAULT 0`); } catch { }
+  // Anti-cheat signals captured at submit time (JSON).
+  try { db.exec(`ALTER TABLE code_battles ADD COLUMN creator_flags TEXT DEFAULT NULL`); } catch { }
+  try { db.exec(`ALTER TABLE code_battles ADD COLUMN opponent_flags TEXT DEFAULT NULL`); } catch { }
+  // Profile bio (Twitter-style, 280 chars max).
+  try { db.exec(`ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''`); } catch { }
+  // Push notification subscriptions (JSON per user).
+  try { db.exec(`ALTER TABLE users ADD COLUMN push_subscription TEXT DEFAULT NULL`); } catch { }
 }
 
 /* ═══ BATTLE HELPERS ═══ */
@@ -673,10 +816,32 @@ export function validateJavaScriptCode(code: string, tests: { input: string; exp
   return { passed: true, results };
 }
 
-export function submitBattleSolution(battleId: string, userId: number, code: string, timeMs: number): CodeBattle | null {
+export function submitBattleSolution(
+  battleId: string,
+  userId: number,
+  code: string,
+  _clientTimeMs: number,
+  flags: unknown = null
+): CodeBattle | null {
   const db = getDb();
   const battle = db.prepare("SELECT * FROM code_battles WHERE id = ?").get(battleId) as CodeBattle | null;
   if (!battle || battle.status !== "active") return null;
+
+  // Enforce that the submitter is a participant
+  if (userId !== battle.creator_id && userId !== battle.opponent_id) return null;
+
+  // ── Anti-cheat: compute timeMs server-side from `started_at`, ignore client value ──
+  // If clientTimeMs is far below the server elapsed, trust the server (anti time-spoof).
+  // If above, also trust the server (client clock can drift, but the floor is what matters
+  // for ranked leaderboards).
+  let serverTimeMs = 0;
+  if (battle.started_at) {
+    serverTimeMs = Math.max(0, Date.now() - new Date(battle.started_at + "Z").getTime());
+  }
+  // Sanity floor: anything under 1 second is humanly impossible and almost certainly
+  // a timing exploit or race condition. Reject hard.
+  if (serverTimeMs < 1000) return null;
+  const timeMs = serverTimeMs;
 
   // Get the challenge tests
   const challenge = db.prepare("SELECT * FROM battle_challenges WHERE id = ?").get(battle.challenge_id) as BattleChallenge | null;
@@ -685,24 +850,18 @@ export function submitBattleSolution(battleId: string, userId: number, code: str
   // Validate the code against tests
   const tests = JSON.parse(challenge.tests) as { input: string; expected: string }[];
   const validation = validateJavaScriptCode(code, tests);
-  
-  if (!validation.passed) {
-    // Code failed tests - save submission but don't finish battle
-    if (userId === battle.creator_id) {
-      db.prepare("UPDATE code_battles SET creator_code = ?, creator_time = ? WHERE id = ?").run(code, timeMs, battleId);
-    } else if (userId === battle.opponent_id) {
-      db.prepare("UPDATE code_battles SET opponent_code = ?, opponent_time = ? WHERE id = ?").run(code, timeMs, battleId);
-    }
-    // Return null to indicate failure
-    return null;
+
+  // Persist the submission + flags, regardless of pass/fail
+  const flagsJson = flags ? JSON.stringify(flags).slice(0, 4000) : null;
+  if (userId === battle.creator_id) {
+    db.prepare("UPDATE code_battles SET creator_code = ?, creator_time = ?, creator_flags = COALESCE(?, creator_flags) WHERE id = ?")
+      .run(code, timeMs, flagsJson, battleId);
+  } else {
+    db.prepare("UPDATE code_battles SET opponent_code = ?, opponent_time = ?, opponent_flags = COALESCE(?, opponent_flags) WHERE id = ?")
+      .run(code, timeMs, flagsJson, battleId);
   }
 
-  // Save the submission
-  if (userId === battle.creator_id) {
-    db.prepare("UPDATE code_battles SET creator_code = ?, creator_time = ? WHERE id = ?").run(code, timeMs, battleId);
-  } else if (userId === battle.opponent_id) {
-    db.prepare("UPDATE code_battles SET opponent_code = ?, opponent_time = ? WHERE id = ?").run(code, timeMs, battleId);
-  } else return null;
+  if (!validation.passed) return null;
 
   // First correct submission wins immediately!
   const winnerId = userId;
