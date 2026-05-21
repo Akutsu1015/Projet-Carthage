@@ -215,11 +215,11 @@ export const MODULES = [
   {
     id: "react",
     name: "React",
-    description: "Interfaces utilisateur modernes et réactives — 120 niveaux",
+    description: "Interfaces utilisateur modernes et réactives — 220 niveaux",
     icon: "Atom",
     color: "#61dafb",
     href: "/exercises/react",
-    levels: 120,
+    levels: 220,
     available: true,
   },
   {

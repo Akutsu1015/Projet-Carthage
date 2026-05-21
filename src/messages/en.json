@@ -395,7 +395,7 @@
     },
     "react": {
       "name": "React",
-      "description": "Modern and responsive user interfaces — 120 levels"
+      "description": "Modern reactive UIs — 220 levels"
     },
     "nodejs": {
       "name": "Node.js",

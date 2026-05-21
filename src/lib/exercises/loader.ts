@@ -48,6 +48,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./react-part3"),
     import("./react-part4"),
     import("./react-part5"),
+    import("./react-part6"),
+    import("./react-part7"),
+    import("./react-part8"),
+    import("./react-part9"),
   ],
   nodejs: () => [
     import("./nodejs-part1"),
