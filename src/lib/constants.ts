@@ -249,7 +249,7 @@ export const MODULES = [
     icon: "Cpu",
     color: "#5C6BC0",
     href: "/exercises/c",
-    levels: 30,
+    levels: 150,
     available: true,
   },
 
