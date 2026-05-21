@@ -225,11 +225,11 @@ export const MODULES = [
   {
     id: "nodejs",
     name: "Node.js",
-    description: "Backend JavaScript et APIs — 120 niveaux",
+    description: "Backend JavaScript et APIs — 220 niveaux",
     icon: "Server",
     color: "#68a063",
     href: "/exercises/nodejs",
-    levels: 120,
+    levels: 220,
     available: true,
   },
   {

@@ -59,6 +59,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./nodejs-part3"),
     import("./nodejs-part4"),
     import("./nodejs-part5"),
+    import("./nodejs-part6"),
+    import("./nodejs-part7"),
+    import("./nodejs-part8"),
+    import("./nodejs-part9"),
   ],
   cpp: () => [
     import("./cpp-part1"),
