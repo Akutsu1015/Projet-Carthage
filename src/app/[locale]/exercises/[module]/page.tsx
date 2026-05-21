@@ -7,9 +7,12 @@ interface Props {
   params: Promise<{ module: string; locale: string }>;
 }
 
-export async function generateStaticParams() {
-  return MODULES.filter((m) => m.available).map((m) => ({ module: m.id }));
-}
+// We previously had `generateStaticParams` returning only { module }, which under
+// the [locale]/[module] tree caused Next.js to fall back to dynamic rendering
+// at runtime — and the next-intl request config triggers a DYNAMIC_SERVER_USAGE
+// at every render. Just opt out of static generation for these pages: the
+// client component dominates render cost anyway.
+export const dynamic = "force-dynamic";
 
 const MODULE_SEO: Record<string, { title: string; desc: string; kw: string[] }> = {
   frontend: {
