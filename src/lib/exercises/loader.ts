@@ -71,6 +71,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./cpp-part4"),
     import("./cpp-part5"),
     import("./cpp-part6"),
+    import("./cpp-part7"),
+    import("./cpp-part8"),
+    import("./cpp-part9"),
+    import("./cpp-part10"),
   ],
   csharp: () => [
     import("./csharp-part1"),

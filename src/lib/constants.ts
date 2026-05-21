@@ -235,11 +235,11 @@ export const MODULES = [
   {
     id: "cpp",
     name: "C++",
-    description: "C++ moderne — STL, templates, threads",
+    description: "C++ moderne — STL, templates, threads — 220 niveaux",
     icon: "Cpu",
     color: "#A8B9CC",
     href: "/exercises/cpp",
-    levels: 120,
+    levels: 220,
     available: true,
   },
   {
