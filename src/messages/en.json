@@ -286,12 +286,13 @@
     "play_again": "Play again"
   },
   "leaderboard": {
-    "title": "Leaderboard",
+    "title": "Global Leaderboard",
+    "subtitle": "Ranking of the best Lyoko warriors.",
     "rank": "Rank",
-    "player": "Player",
-    "xp": "XP",
+    "warrior": "Warrior",
+    "score": "Score",
     "level": "Level",
-    "streak": "Streak"
+    "empty": "No data available."
   },
   "certification": {
     "title": "Certifications",
@@ -401,8 +402,12 @@
       "description": "JavaScript backend and APIs — 120 levels"
     },
     "cpp": {
-      "name": "C / C++",
-      "description": "Low-level system programming — 120 levels"
+      "name": "C++",
+      "description": "Modern C++ — STL, templates, threads"
+    },
+    "c": {
+      "name": "C",
+      "description": "Low-level C — pointers, memory, systems"
     }
   },
   "blocs_data": {
@@ -493,15 +498,6 @@
       "logout_confirm": "Revoke all sessions on all your devices?"
     },
     "loading": "Loading…"
-  },
-  "leaderboard": {
-    "title": "Global Leaderboard",
-    "subtitle": "Ranking of the best Lyoko warriors.",
-    "rank": "Rank",
-    "warrior": "Warrior",
-    "score": "Score",
-    "level": "Level",
-    "empty": "No data available."
   },
   "battle_ext": {
     "lobby_title": "Battle Lobby",
@@ -735,7 +731,11 @@
       "master": "Master",
       "legendary": "Legendary"
     },
-    "podium": ["2nd", "1st", "3rd"],
+    "podium": [
+      "2nd",
+      "1st",
+      "3rd"
+    ],
     "you": "you",
     "lvl": "Lvl.",
     "exercises": "exercises",

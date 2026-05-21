@@ -286,12 +286,13 @@
     "play_again": "Jouer encore"
   },
   "leaderboard": {
-    "title": "Classement",
+    "title": "Classement Général",
+    "subtitle": "Classement des meilleurs guerriers de Lyoko.",
     "rank": "Rang",
-    "player": "Joueur",
-    "xp": "XP",
+    "warrior": "Guerrier",
+    "score": "Score",
     "level": "Niveau",
-    "streak": "Série"
+    "empty": "Aucune donnée disponible."
   },
   "certification": {
     "title": "Certifications",
@@ -401,8 +402,12 @@
       "description": "Backend JavaScript et APIs — 120 niveaux"
     },
     "cpp": {
-      "name": "C / C++",
-      "description": "Programmation système bas niveau — 120 niveaux"
+      "name": "C++",
+      "description": "C++ moderne — STL, templates, threads"
+    },
+    "c": {
+      "name": "C",
+      "description": "C bas niveau — pointeurs, mémoire, système"
     }
   },
   "blocs_data": {
@@ -494,15 +499,6 @@
     },
     "loading": "Chargement…"
   },
-  "leaderboard": {
-    "title": "Classement Général",
-    "subtitle": "Classement des meilleurs guerriers de Lyoko.",
-    "rank": "Rang",
-    "warrior": "Guerrier",
-    "score": "Score",
-    "level": "Niveau",
-    "empty": "Aucune donnée disponible."
-  },
   "battle_ext": {
     "lobby_title": "Lobby Battle",
     "arena_title": "Arène Battle",
@@ -589,7 +585,7 @@
     "solution_submitted": "Solution soumise !",
     "waiting_opponent_result": "En attente de l'adversaire...",
     "test_btn": "Tester (Ctrl+Enter)",
-      "tests_passed": "%{pass}/%{total} tests passés",
+    "tests_passed": "%{pass}/%{total} tests passés",
     "btn_submitting": "Envoi...",
     "btn_submit": "Soumettre"
   },
@@ -735,7 +731,11 @@
       "master": "Maître",
       "legendary": "Légendaire"
     },
-    "podium": ["2e", "1er", "3e"],
+    "podium": [
+      "2e",
+      "1er",
+      "3e"
+    ],
     "you": "vous",
     "lvl": "Nv.",
     "exercises": "exercices",
