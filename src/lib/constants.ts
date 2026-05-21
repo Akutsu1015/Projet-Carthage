@@ -195,11 +195,11 @@ export const MODULES = [
   {
     id: "csharp",
     name: "C# & .NET",
-    description: "Applications desktop et serveur — 120 niveaux",
+    description: "Applications desktop et serveur — 220 niveaux",
     icon: "Monitor",
     color: "#68217a",
     href: "/exercises/csharp",
-    levels: 120,
+    levels: 220,
     available: true,
   },
   {
