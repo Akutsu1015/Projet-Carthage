@@ -19,6 +19,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./javascript-part2"),
     import("./javascript-part3"),
     import("./javascript-part4"),
+    import("./javascript-part5"),
+    import("./javascript-part6"),
+    import("./javascript-part7"),
+    import("./javascript-part8"),
   ],
   python: () => [
     import("./python-part1"),

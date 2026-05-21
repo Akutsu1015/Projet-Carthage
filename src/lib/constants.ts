@@ -175,11 +175,11 @@ export const MODULES = [
   {
     id: "javascript",
     name: "JavaScript",
-    description: "Le langage du web moderne et interactif — 102 niveaux",
+    description: "Le langage du web moderne et interactif — 202 niveaux",
     icon: "Braces",
     color: "#f7df1e",
     href: "/exercises/javascript",
-    levels: 102,
+    levels: 202,
     available: true,
   },
   {
