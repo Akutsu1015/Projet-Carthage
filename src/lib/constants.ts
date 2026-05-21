@@ -185,11 +185,11 @@ export const MODULES = [
   {
     id: "python",
     name: "Python",
-    description: "IA, data science et automatisation — 120 niveaux",
+    description: "IA, data science et automatisation — 220 niveaux",
     icon: "Terminal",
     color: "#3776ab",
     href: "/exercises/python",
-    levels: 120,
+    levels: 220,
     available: true,
   },
   {

@@ -30,6 +30,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./python-part3"),
     import("./python-part4"),
     import("./python-part5"),
+    import("./python-part6"),
+    import("./python-part7"),
+    import("./python-part8"),
+    import("./python-part9"),
   ],
   dart: () => [
     import("./dart-part1"),
