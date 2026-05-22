@@ -205,11 +205,11 @@ export const MODULES = [
   {
     id: "dart",
     name: "Dart & Flutter",
-    description: "Applications mobiles multiplateformes — 150 niveaux",
+    description: "Applications mobiles multiplateformes — 250 niveaux",
     icon: "Smartphone",
     color: "#02569B",
     href: "/exercises/dart",
-    levels: 150,
+    levels: 250,
     available: true,
   },
   {
@@ -245,11 +245,11 @@ export const MODULES = [
   {
     id: "c",
     name: "C",
-    description: "C bas niveau — pointeurs, mémoire, système",
+    description: "C bas niveau — pointeurs, mémoire, système — 250 niveaux",
     icon: "Cpu",
     color: "#5C6BC0",
     href: "/exercises/c",
-    levels: 150,
+    levels: 250,
     available: true,
   },
 

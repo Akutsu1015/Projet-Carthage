@@ -41,6 +41,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./dart-part3"),
     import("./dart-part4"),
     import("./dart-part5"),
+    import("./dart-part6"),
+    import("./dart-part7"),
+    import("./dart-part8"),
+    import("./dart-part9"),
   ],
   react: () => [
     import("./react-part1"),
@@ -97,6 +101,10 @@ const PARTS: Record<string, () => Promise<unknown>[]> = {
     import("./c-part6"),
     import("./c-part7"),
     import("./c-part8"),
+    import("./c-part9"),
+    import("./c-part10"),
+    import("./c-part11"),
+    import("./c-part12"),
   ],
 };
 
