@@ -123,7 +123,7 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-50 group flex items-center gap-3 rounded-2xl border border-lyoko-blue/30 bg-dark-card/95 px-4 py-3 shadow-2xl shadow-lyoko-blue/20 backdrop-blur-xl transition-all hover:scale-105 hover:border-lyoko-blue/50 hover:shadow-lyoko-blue/30"
+        className="fixed bottom-0 right-4 z-50 group flex items-center gap-3 rounded-t-2xl border-t border-l border-r border-lyoko-blue/30 bg-dark-card/95 px-4 py-3 shadow-2xl shadow-lyoko-blue/20 backdrop-blur-xl transition-all hover:scale-105 hover:border-lyoko-blue/50 hover:shadow-lyoko-blue/30"
       >
         <div className="relative">
           <JeremyAvatar size={44} />
@@ -140,7 +140,7 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
   // Minimized state
   if (minimized) {
     return (
-      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-2xl border border-lyoko-blue/30 bg-dark-card/95 px-4 py-2 shadow-2xl backdrop-blur-xl">
+      <div className="fixed bottom-0 right-4 z-50 flex items-center gap-2 rounded-t-2xl border-t border-l border-r border-lyoko-blue/30 bg-dark-card/95 px-4 py-2 shadow-2xl backdrop-blur-xl">
         <JeremyAvatar size={32} speaking={speaking} />
         <span className="text-xs font-bold text-white">Jérémie</span>
         <button onClick={() => setMinimized(false)} className="ml-2 rounded p-1 text-white/50 hover:bg-white/10 hover:text-white">
