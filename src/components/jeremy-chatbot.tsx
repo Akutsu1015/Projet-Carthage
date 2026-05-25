@@ -155,7 +155,7 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
 
   // Full chat window
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex w-[380px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] flex-col overflow-hidden rounded-2xl border border-lyoko-blue/20 bg-dark-card/95 shadow-2xl shadow-lyoko-blue/10 backdrop-blur-xl">
+    <div className="fixed bottom-0 right-0 z-50 flex w-[380px] max-w-full h-[500px] max-h-[100dvh] flex-col overflow-hidden rounded-t-2xl border-t border-l border-lyoko-blue/20 bg-dark-card/95 shadow-2xl shadow-lyoko-blue/10 backdrop-blur-xl">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-white/5 bg-gradient-to-r from-lyoko-blue/10 to-transparent px-4 py-3">
         <JeremyAvatar size={40} speaking={speaking} />
