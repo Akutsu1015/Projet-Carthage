@@ -184,6 +184,27 @@ Les exercices sont dans `src/lib/exercises/`. Pour en ajouter :
 
 ## Déploiement
 
+### Vercel (Recommandé)
+
+Ce projet est configuré pour un déploiement automatique sur **Vercel** depuis GitHub.
+
+1. **Connecter votre repo GitHub à Vercel**
+   - Allez sur [vercel.com](https://vercel.com)
+   - Cliquez sur "Add New Project"
+   - Importez le repo `Akutsu1015/Projet-Carthage`
+   - Vercel détectera automatiquement la configuration Next.js
+
+2. **Configuration des variables d'environnement**
+   - Dans les settings du projet Vercel, ajoutez :
+   - `NEXT_PUBLIC_APP_URL` = `https://votre-domaine.vercel.app` (ou votre domaine personnalisé)
+   - Les autres variables (Google OAuth, SMTP, Mistral) sont **optionnelles** - l'app fonctionne sans elles
+
+3. **Déploiement automatique**
+   - Chaque push sur `main` déclenche un nouveau déploiement
+   - Les PRs créent des previews automatiques
+
+### Déploiement manuel
+
 ```bash
 # Build production
 npm run build
@@ -195,7 +216,17 @@ npm start
 node battle-server.js
 ```
 
-Compatible avec tout hébergeur Node.js (VPS, Vercel, Railway, etc.).
+### Sécurité (Open Source)
+
+Ce projet est **100% open source** et conçu pour être déployé publiquement :
+
+- ✅ **Aucune donnée sensible** dans le code
+- ✅ **Base de données SQLite locale** (pas de cloud DB)
+- ✅ **Variables d'environnement optionnelles** (OAuth, email, chatbot)
+- ✅ **.gitignore** protège les fichiers sensibles (.env, data/, *.db)
+- ✅ **.env.example** fourni sans valeurs réelles
+
+L'application fonctionne parfaitement sans aucune clé API. Les fonctionnalités optionnelles s'activent uniquement si les clés sont fournies.
 
 ---
 
