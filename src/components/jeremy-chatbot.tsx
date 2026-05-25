@@ -118,88 +118,105 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
     });
   };
 
-  // Floating button when closed
+  // Floating button when closed (takes full width at bottom-0)
   if (!open) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-0 right-4 z-50 group flex items-center gap-3 rounded-t-2xl border-t border-l border-r border-lyoko-blue/30 bg-dark-card/95 px-4 py-3 shadow-2xl shadow-lyoko-blue/20 backdrop-blur-xl transition-all hover:scale-105 hover:border-lyoko-blue/50 hover:shadow-lyoko-blue/30"
+        className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-between border-t border-lyoko-blue/30 bg-dark-card/95 px-6 py-3 shadow-2xl backdrop-blur-xl transition-all hover:bg-dark-card/80"
       >
-        <div className="relative">
-          <JeremyAvatar size={44} />
-          <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-dark-card bg-lyoko-green" />
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <JeremyAvatar size={32} />
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-dark-card bg-lyoko-green" />
+          </div>
+          <div className="text-left">
+            <span className="text-xs font-bold text-white">Jérémie Belpois</span>
+            <span className="mx-2 text-white/30">|</span>
+            <span className="text-[10px] text-lyoko-green">Supercalculateur prêt - Cliquez pour ouvrir le terminal d&apos;assistance</span>
+          </div>
         </div>
-        <div className="text-left">
-          <div className="text-xs font-bold text-white">Jérémie Belpois</div>
-          <div className="text-[10px] text-white/50">Assistant IA</div>
+        <div className="rounded bg-lyoko-blue/10 px-2 py-1 text-[10px] font-bold text-lyoko-blue">
+          OUVRIR
         </div>
       </button>
     );
   }
 
-  // Minimized state
+  // Minimized state (bar at the bottom)
   if (minimized) {
     return (
-      <div className="fixed bottom-0 right-4 z-50 flex items-center gap-2 rounded-t-2xl border-t border-l border-r border-lyoko-blue/30 bg-dark-card/95 px-4 py-2 shadow-2xl backdrop-blur-xl">
-        <JeremyAvatar size={32} speaking={speaking} />
-        <span className="text-xs font-bold text-white">Jérémie</span>
-        <button onClick={() => setMinimized(false)} className="ml-2 rounded p-1 text-white/50 hover:bg-white/10 hover:text-white">
-          <Maximize2 size={14} />
-        </button>
-        <button onClick={() => { setOpen(false); setMinimized(false); }} className="rounded p-1 text-white/50 hover:bg-white/10 hover:text-xana-red">
-          <X size={14} />
-        </button>
+      <div className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-between border-t border-lyoko-blue/30 bg-dark-card/95 px-6 py-2 shadow-2xl backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          <JeremyAvatar size={24} speaking={speaking} />
+          <span className="text-xs font-bold text-white">Terminal Jérémie</span>
+          <span className="text-[10px] text-white/40">Minimisé</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setMinimized(false)} className="rounded p-1 text-white/50 hover:bg-white/10 hover:text-white" title="Agrandir">
+            <Maximize2 size={14} />
+          </button>
+          <button onClick={() => { setOpen(false); setMinimized(false); }} className="rounded p-1 text-white/50 hover:bg-white/10 hover:text-xana-red" title="Fermer">
+            <X size={14} />
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Full chat window
+  // Full terminal banner at the bottom (full width)
   return (
-    <div className="fixed bottom-0 right-0 z-50 flex w-[380px] max-w-full h-[500px] max-h-[100dvh] flex-col overflow-hidden rounded-t-2xl border-t border-l border-lyoko-blue/20 bg-dark-card/95 shadow-2xl shadow-lyoko-blue/10 backdrop-blur-xl">
+    <div className="fixed bottom-0 left-0 z-50 flex w-full h-[320px] max-h-[50dvh] flex-col overflow-hidden border-t border-lyoko-blue/30 bg-dark-card/95 shadow-2xl backdrop-blur-xl">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-white/5 bg-gradient-to-r from-lyoko-blue/10 to-transparent px-4 py-3">
-        <JeremyAvatar size={40} speaking={speaking} />
-        <div className="flex-1">
-          <div className="text-sm font-bold text-white">Jérémie Belpois</div>
-          <div className="text-[10px] text-lyoko-green">
-            {loading ? "Analyse en cours..." : "Supercalculateur en ligne"}
+      <div className="flex items-center justify-between border-b border-white/5 bg-gradient-to-r from-lyoko-blue/10 to-transparent px-6 py-2.5">
+        <div className="flex items-center gap-3">
+          <JeremyAvatar size={32} speaking={speaking} />
+          <div>
+            <div className="text-xs font-bold text-white">Terminal d&apos;assistance de Jérémie Belpois</div>
+            <div className="text-[9px] text-lyoko-green">
+              {loading ? "Analyse du supercalculateur en cours..." : "Supercalculateur connecté à Lyoko"}
+            </div>
           </div>
         </div>
-        <button
-          onClick={() => setProfMode(!profMode)}
-          className={`rounded p-1.5 transition-all ${profMode ? "bg-lyoko-green/20 text-lyoko-green" : "text-white/30 hover:bg-white/10 hover:text-white"}`}
-          title={profMode ? "Mode Prof activé" : "Activer le mode Prof"}
-        >
-          <GraduationCap size={14} />
-        </button>
-        <button onClick={clearChat} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-white" title="Effacer la conversation">
-          <Trash2 size={14} />
-        </button>
-        <button onClick={() => setMinimized(true)} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-white">
-          <Minimize2 size={14} />
-        </button>
-        <button onClick={() => setOpen(false)} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-xana-red">
-          <X size={14} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setProfMode(!profMode)}
+            className={`rounded p-1.5 transition-all ${profMode ? "bg-lyoko-green/20 text-lyoko-green" : "text-white/30 hover:bg-white/10 hover:text-white"}`}
+            title={profMode ? "Mode Prof activé (Explications simples)" : "Activer le mode Prof"}
+          >
+            <GraduationCap size={14} />
+          </button>
+          <button onClick={clearChat} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-white" title="Effacer la conversation">
+            <Trash2 size={14} />
+          </button>
+          <button onClick={() => setMinimized(true)} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-white" title="Minimiser">
+            <Minimize2 size={14} />
+          </button>
+          <button onClick={() => setOpen(false)} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-xana-red" title="Fermer">
+            <X size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3" style={{ minHeight: "120px" }}>
+      <div className="flex-1 overflow-y-auto px-6 py-3" style={{ minHeight: "80px" }}>
         {messages.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-6 text-center">
-            <JeremyAvatar size={80} />
-            <div>
-              <p className="text-sm font-medium text-white">Salut ! C&apos;est Jérémie.</p>
-              <p className="mt-1 text-xs text-white/50">
-                J&apos;ai mon supercalculateur prêt ! Dis-moi sur quoi tu bloques et on va résoudre ça ensemble.
-              </p>
+          <div className="flex flex-col items-center justify-center gap-3 py-4 text-center">
+            <div className="flex items-center gap-4">
+              <JeremyAvatar size={56} />
+              <div className="text-left">
+                <p className="text-xs font-medium text-white">Besoin d&apos;aide sur cet exercice ?</p>
+                <p className="mt-0.5 text-[11px] text-white/50 max-w-xl">
+                  Je peux t&apos;expliquer les concepts ou analyser ton code sans te donner la réponse directe. Choisis une option ou écris-moi ci-dessous !
+                </p>
+              </div>
             </div>
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+            <div className="flex flex-wrap justify-center gap-2 mt-1">
               {["Je comprends pas l'exercice", "J'ai une erreur", "Explique-moi le concept", "Donne-moi un indice"].map((q) => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); }}
-                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-white/60 transition-all hover:border-lyoko-blue/30 hover:bg-lyoko-blue/10 hover:text-white min-h-[36px]"
+                  className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] text-white/60 transition-all hover:border-lyoko-blue/30 hover:bg-lyoko-blue/10 hover:text-white"
                 >
                   {q}
                 </button>
@@ -211,14 +228,14 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
         {messages.map((msg, i) => (
           <div key={i} className={`mb-3 flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             {msg.role === "assistant" && (
-              <div className="mr-2 mt-1 flex-shrink-0">
-                <JeremyAvatar size={28} speaking={loading && i === messages.length - 1} />
+              <div className="mr-2 mt-0.5 flex-shrink-0">
+                <JeremyAvatar size={24} speaking={loading && i === messages.length - 1} />
               </div>
             )}
             <div
-              className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed ${msg.role === "user"
-                ? "rounded-br-sm bg-lyoko-blue/20 text-white"
-                : "rounded-bl-sm bg-white/5 text-white/90"
+              className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${msg.role === "user"
+                ? "bg-lyoko-blue/20 text-white"
+                : "bg-white/5 text-white/90"
                 }`}
             >
               {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
@@ -228,11 +245,11 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
 
         {loading && (
           <div className="mb-3 flex justify-start">
-            <div className="mr-2 mt-1 flex-shrink-0">
-              <JeremyAvatar size={28} speaking={true} />
+            <div className="mr-2 mt-0.5 flex-shrink-0">
+              <JeremyAvatar size={24} speaking={true} />
             </div>
-            <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm bg-white/5 px-3 py-2 text-xs text-white/50">
-              <Loader2 size={12} className="animate-spin" />
+            <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-xs text-white/50">
+              <Loader2 size={11} className="animate-spin" />
               Jérémie réfléchit...
             </div>
           </div>
@@ -242,15 +259,15 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
       </div>
 
       {/* Input */}
-      <div className="border-t border-white/5 px-3 py-2">
-        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2">
+      <div className="border-t border-white/5 px-6 py-2 bg-black/10">
+        <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-1.5">
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Demande à Jérémie..."
+            placeholder="Demande une explication ou un indice à Jérémie..."
             className="flex-1 bg-transparent text-xs text-white outline-none placeholder:text-white/30"
             disabled={loading}
           />
@@ -259,12 +276,9 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
             disabled={loading || !input.trim()}
             className="rounded-lg bg-lyoko-blue/20 p-1.5 text-lyoko-blue transition-all hover:bg-lyoko-blue/30 disabled:opacity-30"
           >
-            <Send size={14} />
+            <Send size={12} />
           </button>
         </div>
-        <p className="mt-1 text-center text-[9px] text-white/20">
-          Jérémie ne donne pas les solutions — il guide !
-        </p>
       </div>
     </div>
   );
