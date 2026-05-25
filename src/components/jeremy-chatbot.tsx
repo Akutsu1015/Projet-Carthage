@@ -57,7 +57,7 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
 
   // Dynamically inject custom bottom paddings to the exercise container so that the scrollable area ends above the chatbot
   useEffect(() => {
-    const mainScrollable = document.querySelector(".flex-1.overflow-y-auto.p-3.sm\\:p-6");
+    const mainScrollable = document.getElementById("exercise-content-scroll");
     if (!mainScrollable) return;
 
     // Remove existing paddings to avoid duplication

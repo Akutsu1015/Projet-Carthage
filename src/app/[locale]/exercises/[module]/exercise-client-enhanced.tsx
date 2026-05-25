@@ -839,7 +839,7 @@ export function ExerciseClientEnhanced({ moduleId, moduleName, moduleColor, modu
         )}
 
         {/* Exercise content */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
+        <div id="exercise-content-scroll" className="flex-1 overflow-y-auto p-3 sm:p-6">
           <TransitionWrapper
             transitionKey={currentIdx}
             type="slideUp"
