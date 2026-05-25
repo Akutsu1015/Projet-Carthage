@@ -2,7 +2,7 @@
 // Force cache bust: v3.5 - Prevent window auto-scroll on chat open
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MessageCircle, X, Send, Loader2, Minimize2, Maximize2, Trash2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Minimize2, Maximize2, Trash2, GraduationCap } from "lucide-react";
 import JeremyAvatar from "./jeremy-avatar";
 
 interface Message {
@@ -30,6 +30,12 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [profMode, setProfMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("jeremy-prof-mode") === "true";
+    }
+    return false;
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +50,10 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
   useEffect(() => {
     if (open && !minimized) inputRef.current?.focus({ preventScroll: true });
   }, [open, minimized]);
+
+  useEffect(() => {
+    localStorage.setItem("jeremy-prof-mode", profMode.toString());
+  }, [profMode]);
 
   const sendMessage = async () => {
     const text = input.trim();
@@ -60,7 +70,7 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ messages: newMessages, exerciseContext }),
+        body: JSON.stringify({ messages: newMessages, exerciseContext, profMode }),
       });
       const data = await res.json();
       if (data.success && data.reply) {
@@ -155,6 +165,13 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
             {loading ? "Analyse en cours..." : "Supercalculateur en ligne"}
           </div>
         </div>
+        <button
+          onClick={() => setProfMode(!profMode)}
+          className={`rounded p-1.5 transition-all ${profMode ? "bg-lyoko-green/20 text-lyoko-green" : "text-white/30 hover:bg-white/10 hover:text-white"}`}
+          title={profMode ? "Mode Prof activé" : "Activer le mode Prof"}
+        >
+          <GraduationCap size={14} />
+        </button>
         <button onClick={clearChat} className="rounded p-1.5 text-white/30 hover:bg-white/10 hover:text-white" title="Effacer la conversation">
           <Trash2 size={14} />
         </button>
