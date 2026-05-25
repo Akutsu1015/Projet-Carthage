@@ -55,6 +55,27 @@ export default function JeremyChatbot({ exerciseContext }: JeremyChatbotProps) {
     localStorage.setItem("jeremy-prof-mode", profMode.toString());
   }, [profMode]);
 
+  // Dynamically inject custom bottom paddings to the exercise container so that the scrollable area ends above the chatbot
+  useEffect(() => {
+    const mainScrollable = document.querySelector(".flex-1.overflow-y-auto.p-3.sm\\:p-6");
+    if (!mainScrollable) return;
+
+    // Remove existing paddings to avoid duplication
+    mainScrollable.classList.remove("pb-16", "pb-14", "pb-[340px]");
+
+    if (!open) {
+      mainScrollable.classList.add("pb-16"); // when chatbot bar is closed (but broad bar is present)
+    } else if (minimized) {
+      mainScrollable.classList.add("pb-14"); // when chatbot is minimized (thin bar)
+    } else {
+      mainScrollable.classList.add("pb-[340px]"); // when chatbot is fully open
+    }
+
+    return () => {
+      mainScrollable.classList.remove("pb-16", "pb-14", "pb-[340px]");
+    };
+  }, [open, minimized]);
+
   const sendMessage = async () => {
     const text = input.trim();
     if (!text || loading) return;
